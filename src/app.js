@@ -24,4 +24,24 @@ const corsOptions = {
     credentials:true,
     methods:['GET','POST','PUT','DELETE','OPTIONS'],
     allowedHeaders:['Content-Type','Authorization']
+    
 };
+
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+
+app.get('/health', (req,res) => {
+    res.json({
+        status:'ok',
+        timestamp:new Date(),
+        environment:config.env,
+    });
+});
+
+app.use('/api', routes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+module.exports = app;
