@@ -10,7 +10,8 @@ const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000'];
 
 const corsOptions = {
     origin: (origin, callback) => {
-        if(!origin || allowedOrigins.includes(origin))
+        
+        if (!origin) return callback(null, true);
 
         if(allowedOrigins.includes(origin)){
             callback(null,origin);
