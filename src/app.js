@@ -1,8 +1,8 @@
 const express = require ('express');
 const cors = require('cors');
-const config = require('./config/config');
-const routes = require('./routes');
-const errorHandler = require('./middlewares/errorHandler');
+const config = require('./');
+const routes = require('./');
+const errorHandler = require('./');
 
 const app = express();
 
