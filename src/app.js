@@ -1,12 +1,17 @@
 const express = require ('express');
 const cors = require('cors');
-const config = require('./');
-const routes = require('./');
-const errorHandler = require('./');
+const config = require('./config/config');
+const routes = require('./routes');
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000'];
+const allowedOrigins = [
+    config.frontendUrl,
+    'http://localhost:3000', 
+    'http://localhost:5000',
+    'http://localhost:5173',
+];
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -15,7 +20,7 @@ const corsOptions = {
 
         if(allowedOrigins.includes(origin)){
             callback(null,origin);
-        } else if(config.env === 'development'){
+        } else if(config.nodeEnv === 'development'){
             callback(null,true);
         }
         else{
@@ -36,7 +41,7 @@ app.get('/health', (req,res) => {
     res.json({
         status:'ok',
         timestamp:new Date(),
-        environment:config.env,
+        environment:config.nodeEnv,
     });
 });
 
