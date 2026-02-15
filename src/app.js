@@ -2,7 +2,7 @@ const express = require ('express');
 const cors = require('cors');
 const config = require('./config/config');
 const routes = require('./routes');
-const errorHandler = require('./middlewares/errorHandler');
+const {errorHandler, notFound } = require('./middlewares/errorHandler');
 
 const app = express();
 
