@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
-const { Usuario } = require('../Models');
+const { Usuario } = require('../models');
 
-// Middleware para verificar JWT
+
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -50,7 +50,7 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-// Middleware para verificar rol admin
+
 const adminMiddleware = (req, res, next) => {
   if (!req.usuario || req.usuario.role !== 'admin') {
     return res.status(403).json({
@@ -61,7 +61,7 @@ const adminMiddleware = (req, res, next) => {
   next();
 };
 
-// Middleware opcional
+
 const authOptional = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -76,7 +76,7 @@ const authOptional = async (req, res, next) => {
       }
     }
   } catch (error) {
-    // No romper si falla
+
   }
 
   next();
