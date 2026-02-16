@@ -1,8 +1,9 @@
-const express = require('express');
-const productsRouter = require('./products.routes');
+const app = require('./src/app');
+const config = require('./src/config/config');
 
-const router = express.Router();
+const PORT = config.port || 3000;
 
-router.use('/products', productsRouter);
-
-module.exports = router;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    
+})
