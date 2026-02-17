@@ -183,3 +183,45 @@ const eliminarUsuario = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Suspender usuario
+// @route   POST /api/usuarios/:id/suspender
+// @access  Admin
+const suspenderUsuario = async (req, res, next) => {
+    try {
+        const usuario = await Usuario.findById(req.params.id);
+
+        if (!usuario) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Usuario no encontrado'
+            });
+        }
+
+        if (usuario.role === 'admin') {
+            return res.status(403).json({
+                exito: false,
+                mensaje: 'No se puede suspender un administrador'
+            });
+        }
+
+        usuario.suspendido = true;
+        usuario.fechaSuspension = new Date();
+        await usuario.save();
+
+        res.json({
+            exito: true,
+            mensaje: 'Usuario suspendido',
+            datos: {
+                _id: usuario._id,
+                id: usuario._id,
+                nombreDeUsuario: usuario.nombreDeUsuario,
+                email: usuario.email,
+                suspendido: usuario.suspendido,
+                fechaSuspension: usuario.fechaSuspension
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
