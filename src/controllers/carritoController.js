@@ -1,10 +1,6 @@
 const { Carrito, Producto } = require('../Models');
 
-/**
- * @desc    Obtener carrito del usuario
- * @route   GET /api/carrito
- * @access  Private
- */
+
 const obtenerCarrito = async (req, res, next) => {
   try {
     let carrito = await Carrito.findOne({ usuario: req.usuario._id })
@@ -151,3 +147,4 @@ module.exports = {
   agregarItem,
   actualizarCantidad
 };
+
