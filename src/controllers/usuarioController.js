@@ -81,3 +81,72 @@ const obtenerUsuarioPorId = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Actualizar usuario
+// @route   PUT /api/usuarios/:id
+// @access  Admin
+const actualizarUsuario = async (req, res, next) => {
+    try {
+        const { nombreDeUsuario, email, pais, fechaNacimineto, role } = req.body;
+        const usuarioId = req.params.id;
+
+        const usuario = await Usuario.findById(usuarioId);
+
+        if (!usuario) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Usuario no encontrado'
+            });
+        }
+
+        // Validar si el email ya existe en otro usuario
+        if (email && email !== usuario.email) {
+            const emailExiste = await Usuario.findOne({ email: email.toLowerCase() });
+            if (emailExiste) {
+                return res.status(400).json({
+                    exito: false,
+                    mensaje: 'El email ya esta en uso'
+                });
+            }
+        } 
+
+        // Validar si el nombre de usuario ya existe
+        if (nombreDeUsuario && nombreDeUsuario !== usuario.nombreDeUsuario) {
+            const nombreExiste = await Usuario.findOne({
+                nombreDeUsuario: { $regex: new RegExp(`^${nombreDeUsuario}$`, 'i') }
+            });
+            if (nombreExiste) {
+                return res.status(400).json({
+                    exito: false,
+                    mensaje: 'El nombre de usuario ya esta en uso'
+                });
+            }
+        }
+
+        const usuarioActualizado = await Usuario.findByIdUpdate(
+            usuarioId,
+            { nombreDeUsuario, email, pais, fechaNacimineto, role },
+            { new: true, runValidators: true }
+        );
+
+        const datos = {
+            _id: usuarioActualizado._id,
+            id: usuarioActualizado._id,
+            nombreDeUsuario: usuarioActualizado.nombreDeUsuario,
+            email: usuarioActualizado.email,
+            pais: usuarioActualizado.pais,
+            fechaNacimineto: usuarioActualizado.fechaNacimineto,
+            role: usuarioActualizado.role,
+            suspendido: usuarioActualizado.suspendido,
+            fechaSuspension: usuarioActualizado.fechaSuspension
+        };
+
+        res.json({
+            exito: true,
+            mensaje: 'Usuario actualizado',
+            datos
+        });
+    } catch (error) {
+        next(error);
+    }
+};
