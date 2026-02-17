@@ -25,46 +25,46 @@ const obtenerProducto = async (req, res, next) => {
     }
 
     if (marca) {
-    query.marca = { $regex: marca, $options: "i" };
-  }
+      query.marca = { $regex: marca, $options: "i" };
+    }
 
-  if (destacado === "true") {
-    query.destacado = true;
-  }
+    if (destacado === "true") {
+      query.destacado = true;
+    }
 
-  if (stock === "true") {
-    query.stock = true;
-  } else if (stock === "false") {
-    query.stock = false;
-  }
+    if (stock === "true") {
+      query.stock = true;
+    } else if (stock === "false") {
+      query.stock = false;
+    }
 
-  // Rango de precio
-  if (precioMin || precioMax) {
-    query.precio = {};
-    if (precioMin) query.precio.$gte = Number(precioMin);
-    if (precioMax) query.precio.$lte = Number(precioMax);
-  }
+    // Rango de precio
+    if (precioMin || precioMax) {
+      query.precio = {};
+      if (precioMin) query.precio.$gte = Number(precioMin);
+      if (precioMax) query.precio.$lte = Number(precioMax);
+    }
 
-  // Busqueda por texto
-  if (buscar) {
-    query.$or = [
-      { nombre: { $regex: buscar, $options: "i" } },
-       { marca: { $regex: buscar, $options: "i" } },
+    // Busqueda por texto
+    if (buscar) {
+      query.$or = [
+        { nombre: { $regex: buscar, $options: "i" } },
+        { marca: { $regex: buscar, $options: "i" } },
         { modelo: { $regex: buscar, $options: "i" } },
         { descripcion: { $regex: buscar, $options: "i" } },
-    ];
-  }
+      ];
+    }
 
-  let queryBuilder = Producto.find(query);
+    let queryBuilder = Producto.find(query);
 
-  // Ordenar por recientes
-  if (recientes === "true") {
-    queryBuilder = queryBuilder.sort({ createAt: -1 });
-  } else {
-    queryBuilder = queryBuilder.sort({ destacado: -1, createdAt: -1 });
-  }
-  
-   // Limitar resultados
+    // Ordenar por recientes
+    if (recientes === "true") {
+      queryBuilder = queryBuilder.sort({ createAt: -1 });
+    } else {
+      queryBuilder = queryBuilder.sort({ destacado: -1, createdAt: -1 });
+    }
+
+    // Limitar resultados
     if (limite) {
       queryBuilder = queryBuilder.limit(Number(limite));
     }
@@ -130,6 +130,67 @@ const obtenerProductoPorId = async (req, res, next) => {
       destacado: producto.destacado,
       fechaCreacion: producto.createdAt,
       fechaModificacion: producto.updatedAt,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Crear producto
+// @route   POST /api/productos
+// @access  Admin
+const crearProducto = async (req, res, next) => {
+  try {
+    const {
+      nombre,
+      precio,
+      categoria,
+      marca,
+      modelo,
+      año,
+      descripcion,
+      imagen,
+      kilometros,
+      ubicacion,
+      stock,
+      destacado,
+    } = req.body;
+
+    const producto = await Producto.create({
+      nombre,
+      precio: Number(precio),
+      categoria,
+      marca,
+      modelo,
+      año: año ? Number(año) : undefined,
+      descripcion,
+      imagen,
+      kilometros: kilometros ? Number(kilometros) : undefined,
+      ubicacion,
+      stock: stock !== undefined ? stock : true,
+      destacado: destacado !== undefined ? destacado : false,
+    });
+
+    res.status(201).json({
+      exito: true,
+      mensaje: "Producto creado exitosamente",
+      producto: {
+        _id: producto._id,
+        id: producto._id,
+        nombre: producto.nombre,
+        precio: producto.precio,
+        categoria: producto.categoria,
+        marca: producto.marca,
+        modelo: producto.modelo,
+        año: producto.año,
+        descripcion: producto.descripcion,
+        imagen: producto.imagen,
+        kilometros: producto.kilometros,
+        ubicacion: producto.ubicacion,
+        stock: producto.stock,
+        destacado: producto.destacado,
+        fechaCreacion: producto.createdAt,
+      },
     });
   } catch (error) {
     next(error);
