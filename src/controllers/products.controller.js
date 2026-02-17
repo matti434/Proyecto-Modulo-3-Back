@@ -254,3 +254,35 @@ const actualizarProducto = async (req, res, next) => {
   }
 };
 
+// @desc    Eliminar producto
+// @route   DELETE /api/productos/:id
+// @access  Admin
+const eliminarProducto = async (req, res, next) => {
+  try {
+    const producto = await Producto.findById(req.params.id);
+
+    if (!producto) {
+      return res.status(404).json({
+        exito: false,
+        mensaje: "Producto no encontrado",
+      });
+    }
+
+    await Producto.findByIdAndDelete(req.params.id);
+
+    res.json({
+      exito: true,
+      mensaje: "Producto eliminado",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  obtenerProducto,
+  obtenerProductoPorId,
+  crearProducto,
+  actualizarProducto,
+  eliminarProducto,
+};
