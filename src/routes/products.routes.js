@@ -1,8 +1,21 @@
 const express = require('express');
-const { getProducts } = require('../controllers/products.controller');
-
 const router = express.Router();
+const { authMiddleware, adminMiddleware } = require('../middlewares/auth');
+const {
+    obtenerPedidos,
+    obtenerPedidoPorId,
+    crearPedido,
+    actualizarEstado
+} = require('../controllers/pedidoController');
 
-router.get('/', getProducts);
+// Todas las rutas requieren autenticacion
+router.use(authMiddleware);
 
-module.exports = router;
+router.get('/', obtenerPedidos);
+router.get('/:id', obtenerPedidoPorId);
+router.post('/', crearPedido);
+
+// Solo admin puede actualizar estado
+router.put('/:id/estado', adminMiddleware, actualizarEstado);
+
+module.exports = router
