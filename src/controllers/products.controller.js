@@ -196,3 +196,61 @@ const crearProducto = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Actualizar producto
+// @route   PUT /api/productos/:id
+// @access  Admin
+const actualizarProducto = async (req, res, next) => {
+  try {
+    const producto = await Producto.findById(req.params.id);
+
+    if (!producto) {
+      return res.status(404).json({
+        exito: false,
+        mensaje: "Producto no encontrado",
+      });
+    }
+
+    const datosActualizar = { ...req.body };
+    if (datosActualizar.precio) {
+      datosActualizar.precio = Number(datosActualizar.precio);
+    }
+    if (datosActualizar.año) {
+      datosActualizar.año = Number(datosActualizar.año);
+    }
+    if (datosActualizar.kilometros) {
+      datosActualizar.kilometros = Number(datosActualizar.kilometros);
+    }
+
+    const productoActualizado = await Producto.findByIdAndUpdate(
+      req.params.id,
+      datosActualizar,
+      { new: true, runValidators: true },
+    );
+
+    res.json({
+      exito: true,
+      mensaje: "Producto actualizado",
+      producto: {
+        _id: productoActualizado._id,
+        id: productoActualizado._id,
+        nombre: productoActualizado.nombre,
+        precio: productoActualizado.precio,
+        categoria: productoActualizado.categoria,
+        marca: productoActualizado.marca,
+        modelo: productoActualizado.modelo,
+        año: productoActualizado.año,
+        descripcion: productoActualizado.descripcion,
+        imagen: productoActualizado.imagen,
+        kilometros: productoActualizado.kilometros,
+        ubicacion: productoActualizado.ubicacion,
+        stock: productoActualizado.stock,
+        destacado: productoActualizado.destacado,
+        fechaModificacion: productoActualizado.updatedAt,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
