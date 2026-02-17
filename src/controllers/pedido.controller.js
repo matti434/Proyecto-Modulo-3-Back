@@ -1,4 +1,4 @@
-const { Pedido, Carrito } = require('../Models');
+const { Pedido, Carrito } = require('../models');
 
 // @desc    Obtener pedidos del usuario
 // @route   GET /api/pedidos
