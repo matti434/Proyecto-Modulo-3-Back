@@ -150,3 +150,36 @@ const actualizarUsuario = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Eliminar usuario
+// @route   DELETE /api/usuarios/:id
+// @access  Admin
+const eliminarUsuario = async (req, res, next) => {
+    try {
+        const usuario = await Usuario.findById(req.params.id);
+
+        if(!usuario) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Usuario no encontrado'
+            });
+        }
+
+        // Seguridad: No permitir borrar otros admins
+        if (usuario.role === 'admin') {
+            return res.status(403).json({
+                exito: false,
+                mensaje: 'No se puede eliminar un administrador'
+            });
+        }
+
+        await Usuario.findByIdAndDelete(req.params.id);
+
+        res.json({
+            exito: true,
+            mensaje: 'Usuario eliminado'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
