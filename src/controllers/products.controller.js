@@ -98,3 +98,40 @@ const obtenerProducto = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Obtener producto por ID
+// @route   GET /api/productos/:id
+// @access  Public
+const obtenerProductoPorId = async (req, res, next) => {
+  try {
+    const producto = await Producto.findById(req.params.id);
+
+    if (!producto) {
+      return res.status(404).json({
+        exito: false,
+        mensaje: "Producto no encontrado",
+      });
+    }
+
+    res.json({
+      _id: producto._id,
+      id: producto._id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      categoria: producto.categoria,
+      marca: producto.marca,
+      modelo: producto.modelo,
+      año: producto.año,
+      descripcion: producto.descripcion,
+      imagen: producto.imagen,
+      kilometros: producto.kilometros,
+      ubicacion: producto.ubicacion,
+      stock: producto.stock,
+      destacado: producto.destacado,
+      fechaCreacion: producto.createdAt,
+      fechaModificacion: producto.updatedAt,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
