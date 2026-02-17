@@ -1,4 +1,4 @@
-const { Carrito, Producto } = require('../Models');
+const { Carrito, Producto } = require('../models');
 
 
 const obtenerCarrito = async (req, res, next) => {

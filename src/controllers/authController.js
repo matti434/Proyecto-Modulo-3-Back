@@ -1,4 +1,4 @@
-const { Usuario } = require('../Models');
+const { Usuario } = require('../models');
 const { generarToken } = require('../utils/jwt');
 const { AppError } = require('../middlewares/errorHandler');
 
