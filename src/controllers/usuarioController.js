@@ -225,3 +225,47 @@ const suspenderUsuario = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Reactivar usuario
+// @route   POST /api/usuarios/:id/reactivar
+// @access  Admin
+const reactivarUsuario = async (req, res, next) => {
+    try {
+        const usuario = await Usuario.findById(req.params.id);
+
+        if (!usuario) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Usuario no encontrado'
+            });
+        }
+
+        usuario.suspendido = false;
+        usuario.fechaSuspension = null;
+        await usuario.save();
+
+        res.json({
+            exito: true,
+            mensaje: 'Usuario reactivado',
+            datos: {
+                _id: usuario._id,
+                id: usuario._id,
+                nombreDeUsuario: usuario.nombreDeUsuario,
+                email: usuario.email,
+                suspendido: usuario.suspendido,
+                fechaSuspension: usuario.fechaSuspension
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = {
+    obtenerUsuarios,
+    obtenerUsuarioPorId,
+    actualizarUsuario,
+    eliminarUsuario,
+    suspenderUsuario,
+    reactivarUsuario
+};
