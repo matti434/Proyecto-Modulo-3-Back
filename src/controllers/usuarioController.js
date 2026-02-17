@@ -43,4 +43,41 @@ const obtenerUsuarios = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+
+// @desc Obtener usuario por ID
+// @route GET /api/usuarios/:id
+// @access admin
+const obtenerUsuarioPorId = async (req, res, next) => {
+    try {
+        const usuario = await Usuario.findById(req.params.id);
+
+        if (!usuario) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Usuario no encontrado'
+            });
+        }
+
+        const datos = {
+            _id: usuario._id,
+            id: usuario._id,
+            nombreDeUsuario: usuario.nombreDeUsuario,
+            email: usuario.email,
+            pais: usuario.pais,
+            fechaNacimineto: usuario.fechaNacimineto,
+            role: usuario.role,
+            suspendido: usuario.suspendido,
+            fechaSuspension: usuario.fechaSuspension,
+            createdAt: usuario.createdAt
+        };
+
+        res.json({
+            exito: true,
+            mensaje: 'Usuario encontrado',
+            datos
+        });
+    } catch (error) {
+        next(error);
+    }
+};
