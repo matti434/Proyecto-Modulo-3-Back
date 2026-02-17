@@ -34,11 +34,7 @@ const obtenerCarrito = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Agregar item al carrito
- * @route   POST /api/carrito
- * @access  Private
- */
+
 const agregarItem = async (req, res, next) => {
   try {
     const { productoId, cantidad = 1 } = req.body;
