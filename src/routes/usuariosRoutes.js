@@ -3,7 +3,7 @@ const router = express.Router();
 const { authMiddleware, adminMiddleware } = require('../middlewares/auth');
 const {
     obtenerUsuarios,
-    obtenerUsuariosPorId,
+    obtenerUsuarioPorId,
     actualizarUsuario,
     eliminarUsuario,
     suspenderUsuario,
@@ -14,7 +14,7 @@ const {
 router.use(authMiddleware, adminMiddleware);
 
 router.get('/', obtenerUsuarios);
-router.get('/:id', obtenerUsuariosPorId);
+router.get('/:id', obtenerUsuarioPorId);
 router.put('/:id', actualizarUsuario);
 router.delete('/:id', eliminarUsuario);
 router.post('/:id/suspender', suspenderUsuario);
