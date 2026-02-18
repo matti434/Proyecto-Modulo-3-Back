@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const authRoutes = require('./authRoutes');
 const usuarioRoutes = require('./usuariosRoutes');
 const productoRoutes = require('./productoRoutes')
 const pedidoRoutes = require('./pedidoRoutes');

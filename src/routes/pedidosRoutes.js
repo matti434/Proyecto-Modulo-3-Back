@@ -6,7 +6,7 @@ const {
   obtenerPedidoPorId,
   crearPedido,
   actualizarEstado
-} = require('../controllers/pedido.controller');
+} = require('../controllers/pedidoController');
 
 // Todas las rutas requieren estar autenticado
 router.use(authMiddleware);

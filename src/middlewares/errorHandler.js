@@ -61,6 +61,7 @@ const notFound = (req, res, next) => {
 };
 
 module.exports = {
+  AppError,
   notFound,
   errorHandler,
 };
