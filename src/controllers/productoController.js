@@ -58,8 +58,8 @@ const obtenerProducto = async (req, res, next) => {
     let queryBuilder = Producto.find(query);
 
     // Ordenar por recientes
-    if (recientes === "true") {
-      queryBuilder = queryBuilder.sort({ createAt: -1 });
+    if (reciente === "true") {
+      queryBuilder = queryBuilder.sort({ createdAt: -1 });
     } else {
       queryBuilder = queryBuilder.sort({ destacado: -1, createdAt: -1 });
     }
