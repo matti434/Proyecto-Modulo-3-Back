@@ -194,7 +194,7 @@ async function seed() {
         // Contraseña en texto plano: el modelo Usuario la hashea en pre('save')
         await Usuario.create({
           nombreDeUsuario: 'admin',
-          email: 'admin@rollingmotors.com',
+          email: 'admin2@rollingmotors.com',
           password: 'Admin123!',
           pais: 'Argentina',
           fechaNacimiento: new Date('1990-01-01'),
