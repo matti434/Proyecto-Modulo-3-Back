@@ -5,12 +5,16 @@ const {
   registro,
   login,
   obtenerPerfil,
-  actualizarPerfil
+  actualizarPerfil,
+  solicitarRecuperacionPassword,
+  restablecerPasswordConCodigo
 } = require('../controllers/authController');
 
 // Rutas públicas
 router.post('/registro', registro);
 router.post('/login', login);
+router.post('/recuperar-password', solicitarRecuperacionPassword);
+router.post('/restablecer-password', restablecerPasswordConCodigo);
 
 // Rutas protegidas
 router.get('/perfil', authMiddleware, obtenerPerfil);
