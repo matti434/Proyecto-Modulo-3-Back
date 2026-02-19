@@ -39,6 +39,7 @@ const solicitarRecuperacionPassword = async (req, res, next) => {
       mensaje: 'Si el email está registrado, recibirás un código por correo.'
     });
   } catch (error) {
+    console.error('[recuperar-password] Error al enviar código:', error?.message || error);
     next(error);
   }
 };
@@ -88,6 +89,7 @@ const restablecerPasswordConCodigo = async (req, res, next) => {
       mensaje: 'Contraseña actualizada. Ya puedes iniciar sesión.'
     });
   } catch (error) {
+    console.error('[restablecer-password] Error:', error?.message || error);
     next(error);
   }
 };
