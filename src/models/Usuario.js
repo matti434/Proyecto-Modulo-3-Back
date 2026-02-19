@@ -42,7 +42,18 @@ const usuarioSchema = new mongoose.Schema({
     fechaSuspension: {
         type: Date,
         default: null
+    },
+    codigoRecuperacion: {
+        type: String,
+        default: null,
+        select: false
+    },
+    codigoRecuperacionExpira: {
+        type: Date,
+        default: null,
+        select: false
     }
+
 }, {
     timestamps: true
 });
