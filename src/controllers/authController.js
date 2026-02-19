@@ -88,7 +88,7 @@ const login = async (req,res,next) => {
         });
       }
 
-      const passwordCorrecta = await usuario.comparePassword(contrasena);
+      const passwordCorrecta = await usuario.compararPassword(contrasena);
       if(!passwordCorrecta){
         return res.status(401).json({
             exito:false,
@@ -118,7 +118,7 @@ const login = async (req,res,next) => {
       res.status(200).json({
         exito:true,
         mensaje: 'Inicio de sesion exitoso',
-        token: generarToken,
+        token: generarToken(usuario),
         usuario: usuarioResponse
       });
     } catch (error) {

@@ -8,7 +8,7 @@ const app = express();
 
 const allowedOrigins = [
     config.frontendUrl,
-    'http://localhost:3000', 
+    'https://vermillion-rugelach-551560.netlify.app', 
     'http://localhost:5000',
     'http://localhost:5173',
 ];

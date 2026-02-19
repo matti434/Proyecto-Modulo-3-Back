@@ -28,7 +28,7 @@ const obtenerUsuarios = async (req, res, next) => {
             nombreDeUsuario: u.nombreDeUsuario,
             email: u.email,
             pais: u.pais,
-            fechaNacimineto: u.fechaNacimineto,
+            fechaNacimiento: u.fechaNacimiento,
             role: u.role,
             suspendido: u.suspendido,
             fechaSuspension: u.fechaSuspension,
@@ -65,7 +65,7 @@ const obtenerUsuarioPorId = async (req, res, next) => {
             nombreDeUsuario: usuario.nombreDeUsuario,
             email: usuario.email,
             pais: usuario.pais,
-            fechaNacimineto: usuario.fechaNacimineto,
+            fechaNacimiento: usuario.fechaNacimiento,
             role: usuario.role,
             suspendido: usuario.suspendido,
             fechaSuspension: usuario.fechaSuspension,
@@ -87,7 +87,7 @@ const obtenerUsuarioPorId = async (req, res, next) => {
 // @access  Admin
 const actualizarUsuario = async (req, res, next) => {
     try {
-        const { nombreDeUsuario, email, pais, fechaNacimineto, role } = req.body;
+        const { nombreDeUsuario, email, pais, fechaNacimiento, role } = req.body;
         const usuarioId = req.params.id;
 
         const usuario = await Usuario.findById(usuarioId);
@@ -123,9 +123,9 @@ const actualizarUsuario = async (req, res, next) => {
             }
         }
 
-        const usuarioActualizado = await Usuario.findByIdUpdate(
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(
             usuarioId,
-            { nombreDeUsuario, email, pais, fechaNacimineto, role },
+            { nombreDeUsuario, email, pais, fechaNacimiento, role },
             { new: true, runValidators: true }
         );
 
@@ -135,7 +135,7 @@ const actualizarUsuario = async (req, res, next) => {
             nombreDeUsuario: usuarioActualizado.nombreDeUsuario,
             email: usuarioActualizado.email,
             pais: usuarioActualizado.pais,
-            fechaNacimineto: usuarioActualizado.fechaNacimineto,
+            fechaNacimiento: usuarioActualizado.fechaNacimiento,
             role: usuarioActualizado.role,
             suspendido: usuarioActualizado.suspendido,
             fechaSuspension: usuarioActualizado.fechaSuspension

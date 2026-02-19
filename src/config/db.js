@@ -39,7 +39,7 @@ const connectDB = async () => {
 
 // Datos iniciales para desarrollo
 const cargarDatosIniciales = async () => {
-  const { Usuario, Producto } = require('../Models');
+  const { Usuario, Producto } = require('../models');
 
   try {
     // Verificar si ya hay datos
