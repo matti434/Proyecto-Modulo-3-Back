@@ -43,6 +43,55 @@ const solicitarRecuperacionPassword = async (req, res, next) => {
   }
 };
 
+const restablecerPasswordConCodigo = async (req, res, next) => {
+  try {
+    const { email, codigo, nuevaPassword } = req.body;
+    if (!email || !codigo || !nuevaPassword) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'Email, código y nueva contraseña son requeridos'
+      });
+    }
+
+    const usuario = await Usuario.findOne({ email: email.toLowerCase() })
+      .select('+password +codigoRecuperacion +codigoRecuperacionExpira');
+    if (!usuario || !usuario.codigoRecuperacion) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'Código inválido o expirado'
+      });
+    }
+
+    if (usuario.codigoRecuperacion !== codigo) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'Código incorrecto'
+      });
+    }
+    if (new Date() > usuario.codigoRecuperacionExpira) {
+      usuario.codigoRecuperacion = null;
+      usuario.codigoRecuperacionExpira = null;
+      await usuario.save({ validateBeforeSave: false });
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'El código ha expirado. Solicita uno nuevo.'
+      });
+    }
+
+    usuario.password = nuevaPassword;
+    usuario.codigoRecuperacion = null;
+    usuario.codigoRecuperacionExpira = null;
+    await usuario.save();
+
+    res.status(200).json({
+      exito: true,
+      mensaje: 'Contraseña actualizada. Ya puedes iniciar sesión.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 const registro = async (req, res, next) => {
   try {
@@ -257,5 +306,7 @@ module.exports = {
   registro,
   login,
   obtenerPerfil,
-  actualizarPerfil
+  actualizarPerfil,
+  solicitarRecuperacionPassword,
+  restablecerPasswordConCodigo
 };
