@@ -8,12 +8,15 @@ const {
   actualizarProducto,
   eliminarProducto
 } = require('../controllers/productoController');
-const { uploadSingleRouters } = require('../middlewares/upload')
-const { subirImagen } =('../controllers/uploadController')
+const { uploadSingleImage } = require('../middlewares/upload');
+const { subirImagen } = require('../controllers/uploadControllers');
 
 // Rutas públicas
 router.get('/', obtenerProducto);
 router.get('/:id', obtenerProductoPorId);
+
+// Subir imagen (devuelve URL para usar en crear/actualizar producto)
+router.post('/upload', authMiddleware, adminMiddleware, uploadSingleImage, subirImagen);
 
 // Rutas protegidas (admin)
 router.post('/', authMiddleware, adminMiddleware, crearProducto);
@@ -21,4 +24,3 @@ router.put('/:id', authMiddleware, adminMiddleware, actualizarProducto);
 router.delete('/:id', authMiddleware, adminMiddleware, eliminarProducto);
 
 module.exports = router;
-router.post('/upload', awthMiddleware, adminMiddleware, uploadSingleImage, subirImagen);
