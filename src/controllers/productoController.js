@@ -156,6 +156,9 @@ const crearProducto = async (req, res, next) => {
       destacado,
     } = req.body;
 
+    const km = Number(kilometros);
+    const kilometrosValido = kilometros !== '' && kilometros !== undefined && kilometros !== null && !Number.isNaN(km) && km >= 0;
+
     const producto = await Producto.create({
       nombre,
       precio: Number(precio),
@@ -165,7 +168,7 @@ const crearProducto = async (req, res, next) => {
       año: año ? Number(año) : undefined,
       descripcion,
       imagen,
-      kilometros: kilometros ? Number(kilometros) : undefined,
+      kilometros: kilometrosValido ? km : undefined,
       ubicacion,
       stock: stock !== undefined ? stock : true,
       destacado: destacado !== undefined ? destacado : false,
@@ -212,14 +215,19 @@ const actualizarProducto = async (req, res, next) => {
     }
 
     const datosActualizar = { ...req.body };
-    if (datosActualizar.precio) {
+    if (datosActualizar.precio !== undefined && datosActualizar.precio !== '') {
       datosActualizar.precio = Number(datosActualizar.precio);
     }
-    if (datosActualizar.año) {
+    if (datosActualizar.año !== undefined && datosActualizar.año !== '') {
       datosActualizar.año = Number(datosActualizar.año);
     }
-    if (datosActualizar.kilometros) {
-      datosActualizar.kilometros = Number(datosActualizar.kilometros);
+    if ('kilometros' in datosActualizar) {
+      const km = Number(datosActualizar.kilometros);
+      if (datosActualizar.kilometros === '' || datosActualizar.kilometros == null || Number.isNaN(km) || km < 0) {
+        delete datosActualizar.kilometros;
+      } else {
+        datosActualizar.kilometros = km;
+      }
     }
 
     const productoActualizado = await Producto.findByIdAndUpdate(
