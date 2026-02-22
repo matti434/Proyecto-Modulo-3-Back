@@ -77,6 +77,18 @@ const crearPedido = async (req, res, next) => {
       });
     }
 
+    const itemsValidos = carrito.items.filter(item => item.producto != null);
+    if (itemsValidos.length === 0) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'No hay productos validos en el carrito. Algunos pueden haber sido eliminiados.'
+      });
+    }
+    if (itemsValidos.length < carrito.items.length) {
+      carrito.items = itemsValidos;
+      await carrito.save();
+    }
+
     // Calcular totales
     const subtotal = carrito.items.reduce(
       (sum, item) => sum + (item.precioUnitario * item.cantidad),
