@@ -2,6 +2,19 @@ const { Usuario } = require('../models');
 const { generarToken } = require('../utils/jwt');
 const { AppError } = require('../middlewares/errorHandler');
 const { enviarCodigoRecuperacion } = require('../utils/email');
+const config = require('../config/config');
+
+/** Opciones de la cookie JWT (7 días, httpOnly, sameSite). */
+const COOKIE_NAME = 'token';
+const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
+
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: config.nodeEnv === 'production',
+  sameSite: 'lax',
+  maxAge: COOKIE_MAX_AGE_MS,
+  path: '/',
+});
 
 
 const MINUTOS_EXPIRACION_CODIGO = 15;
@@ -128,10 +141,9 @@ const registro = async (req, res, next) => {
       fechaNacimiento
     });
 
-    // Generar token
     const token = generarToken(usuario);
+    res.cookie(COOKIE_NAME, token, getCookieOptions());
 
-    // Respuesta sin password
     const usuarioResponse = {
       _id: usuario._id,
       id: usuario._id,
@@ -147,7 +159,6 @@ const registro = async (req, res, next) => {
     res.status(201).json({
       exito: true,
       mensaje: 'Usuario registrado exitosamente',
-      token,
       usuario: usuarioResponse
     });
   } catch (error) {
@@ -196,6 +207,9 @@ const login = async (req, res, next) => {
       });
     }
 
+    const token = generarToken(usuario);
+    res.cookie(COOKIE_NAME, token, getCookieOptions());
+
     const usuarioResponse = {
       _id: usuario._id,
       id: usuario._id,
@@ -206,17 +220,21 @@ const login = async (req, res, next) => {
       role: usuario.role,
       suspendido: usuario.suspendido,
       createdAt: usuario.createdAt
-    }
+    };
 
     res.status(200).json({
       exito: true,
       mensaje: 'Inicio de sesion exitoso',
-      token: generarToken(usuario),
       usuario: usuarioResponse
     });
   } catch (error) {
     next(error);
   }
+};
+
+const logout = (req, res) => {
+  res.clearCookie(COOKIE_NAME, { path: '/', httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'lax' });
+  res.json({ exito: true, mensaje: 'Sesión cerrada' });
 };
 
 const obtenerPerfil = async (req, res, next) => {
@@ -307,6 +325,7 @@ const actualizarPerfil = async (req, res, next) => {
 module.exports = {
   registro,
   login,
+  logout,
   obtenerPerfil,
   actualizarPerfil,
   solicitarRecuperacionPassword,

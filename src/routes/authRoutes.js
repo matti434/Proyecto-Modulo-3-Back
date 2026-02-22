@@ -4,6 +4,7 @@ const { authMiddleware } = require('../middlewares/auth');
 const {
   registro,
   login,
+  logout,
   obtenerPerfil,
   actualizarPerfil,
   solicitarRecuperacionPassword,
@@ -13,6 +14,7 @@ const {
 // Rutas públicas
 router.post('/registro', registro);
 router.post('/login', login);
+router.post('/logout', logout);
 router.post('/recuperar-password', solicitarRecuperacionPassword);
 router.post('/restablecer-password', restablecerPasswordConCodigo);
 

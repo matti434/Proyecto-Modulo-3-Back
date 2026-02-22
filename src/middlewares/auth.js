@@ -3,18 +3,23 @@ const config = require('../config/config');
 const { Usuario } = require('../models');
 
 
+const getTokenFromRequest = (req) => {
+  if (req.cookies?.token) return req.cookies.token;
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) return authHeader.split(' ')[1];
+  return null;
+};
+
 const authMiddleware = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const token = getTokenFromRequest(req);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
       return res.status(401).json({
         exito: false,
         mensaje: 'Token no proporcionado'
       });
     }
-
-    const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, config.jwtSecret);
     const usuario = await Usuario.findById(decoded.id);
 
@@ -64,10 +69,9 @@ const adminMiddleware = (req, res, next) => {
 
 const authOptional = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const token = getTokenFromRequest(req);
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.split(' ')[1];
+    if (token) {
       const decoded = jwt.verify(token, config.jwtSecret);
       const usuario = await Usuario.findById(decoded.id);
 
