@@ -59,6 +59,13 @@ const crearPedido = async (req, res, next) => {
   try {
     const { direccionEnvio, metodoPago, descuento = 0 } = req.body;
 
+    if (typeof descuento !== 'number' || descuento < 0 || desceunto > 100) {
+      return res.status(400).json({
+        exito : false,
+        mensaje: 'El descuento debe ser un porcentaje entre 0 y 100'
+      });
+    }
+
     // Obtener carrito
     const carrito = await Carrito.findOne({ usuario: req.usuario._id })
       .populate('items.producto', 'nombre marca modelo precio imagen');
