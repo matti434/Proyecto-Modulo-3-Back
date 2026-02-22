@@ -27,6 +27,12 @@ const startServer = async () => {
             console.log('  POST   /api/carrito');
             console.log('  GET    /api/usuarios (admin)');
             console.log('  GET    /api/pedidos');
+            console.log('  GET    /api/home');
+            console.log('  POST   /api/home/portada/upload (admin)');
+            console.log('  POST   /api/home/galeria (admin)');
+            console.log('  PUT    /api/home/galeria/:id (admin)');
+            console.log('  POST   /api/home/galeria/:id/imagen (admin)');
+            console.log('  DELETE /api/home/galeria/:id (admin)');
             console.log('=========================================');
         });
     } catch (error) {

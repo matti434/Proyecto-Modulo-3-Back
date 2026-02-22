@@ -36,6 +36,14 @@ const errorHandler = (err, req, res, next) => {
     error = new AppError(messages.join('. '), 400);
   }
 
+  // Error de Multer (tamaño o formato de imagen)
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    error = new AppError('El archivo es demasiado grande. Máximo 5 MB.', 413);
+  }
+  if (err.message && err.message.includes('Formato de imagen')) {
+    error = new AppError(err.message, 400);
+  }
+
   // Error de JWT
   if (err.name === 'JsonWebTokenError') {
     error = new AppError('Token inválido', 401);
