@@ -8,10 +8,11 @@ const config = require('../config/config');
 const COOKIE_NAME = 'token';
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
 
+/** En producción con front en otro dominio (ej. Netlify + Render), la cookie debe ser sameSite: 'none' para que el navegador la envíe en peticiones cross-origin. */
 const getCookieOptions = () => ({
   httpOnly: true,
   secure: config.nodeEnv === 'production',
-  sameSite: 'lax',
+  sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
   maxAge: COOKIE_MAX_AGE_MS,
   path: '/',
 });
@@ -233,7 +234,7 @@ const login = async (req, res, next) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie(COOKIE_NAME, { path: '/', httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'lax' });
+  res.clearCookie(COOKIE_NAME, { path: '/', httpOnly: true, secure: config.nodeEnv === 'production', sameSite: config.nodeEnv === 'production' ? 'none' : 'lax' });
   res.json({ exito: true, mensaje: 'Sesión cerrada' });
 };
 
