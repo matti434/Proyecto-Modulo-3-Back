@@ -39,7 +39,8 @@ const obtenerPedidoPorId = async (req, res, next) => {
     }
 
     // Verificar que el pedido pertenece al usuario o es admin
-    if (pedido.usuario._id.toString() !== req.usuario._id.toString() && req.usuario.role !== 'admin') {
+    const usuarioPedidoId = (pedido.usuario && pedido.usuario._id) ? pedido.usuario._id : pedido.usuario;
+    if (usuarioPedidoId.toString() !== req.usuario._id.toString() && req.usuario.role !== 'admin') {
       return res.status(403).json({
         exito: false,
         mensaje: 'No autorizado'
