@@ -66,6 +66,13 @@ const crearPedido = async (req, res, next) => {
       });
     }
 
+    if (!direccionEnvio || !direccionEnvio.calle || !direccionEnvio.cuidad || !direccionEnvio.codigoPostal || !direccionEnvio.pais) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'La direccion dl envio (calle, cuidad, codigo postal y pais) es requerida'
+      });
+    }
+
     // Obtener carrito
     const carrito = await Carrito.findOne({ usuario: req.usuario._id })
       .populate('items.producto', 'nombre marca modelo precio imagen');
@@ -90,7 +97,7 @@ const crearPedido = async (req, res, next) => {
     }
 
     // Calcular totales
-    const subtotal = carrito.items.reduce(
+    const subtotal = itemsValidos.reduce(
       (sum, item) => sum + (item.precioUnitario * item.cantidad),
       0
     );
@@ -99,7 +106,7 @@ const crearPedido = async (req, res, next) => {
     const total = subtotal + envio - descuentoMonto;
 
     // Crear items del pedido
-    const itemsPedido = carrito.items.map(item => ({
+    const itemsPedido = itemsValidos.map(item => ({
       producto: item.producto._id,
       nombre: item.producto.nombre,
       marca: item.producto.marca,
