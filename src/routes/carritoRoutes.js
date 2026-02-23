@@ -4,7 +4,8 @@ const { authMiddleware } = require('../middlewares/auth');
 const {
   obtenerCarrito,
   agregarItem,
-  actualizarCantidad
+  actualizarCantidad,
+  eliminarItem
 } = require('../controllers/carritoController');
 
 router.use(authMiddleware);
@@ -12,5 +13,6 @@ router.use(authMiddleware);
 router.get('/', obtenerCarrito);
 router.post('/', agregarItem);
 router.put('/:itemId', actualizarCantidad);
+router.delete('/:itemId', eliminarItem);
 
 module.exports = router;

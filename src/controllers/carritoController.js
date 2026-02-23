@@ -142,9 +142,50 @@ const actualizarCantidad = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Eliminar item del carrito
+ * @route   DELETE /api/carrito/:itemId
+ * @access  Private
+ */
+const eliminarItem = async (req, res, next) => {
+  try {
+    const { itemId } = req.params;
+
+    const carrito = await Carrito.findOne({ usuario: req.usuario._id });
+
+    if (!carrito) {
+      return res.status(404).json({
+        exito: false,
+        mensaje: 'Carrito no encontrado'
+      });
+    }
+
+    const item = carrito.items.id(itemId);
+
+    if (!item) {
+      return res.status(404).json({
+        exito: false,
+        mensaje: 'Item no encontrado en el carrito'
+      });
+    }
+
+    carrito.items.pull(itemId);
+    await carrito.save();
+
+    res.json({
+      exito: true,
+      mensaje: 'Item eliminado del carrito'
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   obtenerCarrito,
   agregarItem,
-  actualizarCantidad
+  actualizarCantidad,
+  eliminarItem
 };
 
