@@ -9,7 +9,7 @@ const app = express();
 
 const allowedOrigins = [
     config.frontendUrl,
-    'https://vermillion-rugelach-551560.netlify.app', 
+    'https://deft-kitsune-9b5f8c.netlify.app/', 
     'http://localhost:5000',
     'http://localhost:5173',
 ];
