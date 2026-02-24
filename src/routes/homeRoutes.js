@@ -11,7 +11,7 @@ const {
   eliminarItemGaleria
 } = require('../controllers/homeController');
 
-// Público
+
 router.get('/', obtenerContenidoHome);
 
 // Admin: portada

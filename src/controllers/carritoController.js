@@ -34,11 +34,7 @@ const obtenerCarrito = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Agregar item al carrito
- * @route   POST /api/carrito
- * @access  Private
- */
+
 const agregarItem = async (req, res, next) => {
   try {
     const { productoId, cantidad = 1 } = req.body;
@@ -94,11 +90,6 @@ const agregarItem = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Actualizar cantidad de item
- * @route   PUT /api/carrito/:itemId
- * @access  Private
- */
 const actualizarCantidad = async (req, res, next) => {
   try {
     const { cantidad } = req.body;
@@ -142,11 +133,6 @@ const actualizarCantidad = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Eliminar item del carrito
- * @route   DELETE /api/carrito/:itemId
- * @access  Private
- */
 const eliminarItem = async (req, res, next) => {
   try {
     const { itemId } = req.params;

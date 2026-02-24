@@ -4,9 +4,7 @@ const ESTADOS_VALIDOS = ['pendiente', 'procesando', 'enviado', 'entregado', 'can
 const AÑO_MIN = 1930;
 const AÑO_MAX = 2025;
 
-// @desc    Crear pedido
-// @route   POST /api/pedidos
-// @body    { titulo, descripcion, fecha }
+
 const crearPedido = async (req, res, next) => {
   try {
     const { titulo, descripcion, fecha } = req.body;
@@ -72,13 +70,11 @@ const crearPedido = async (req, res, next) => {
   }
 };
 
-// @desc    Listado de pedidos
-// @route   GET /api/pedidos?todos=true
-// @query   todos=true para listar todos
+
 const obtenerPedidos = async (req, res, next) => {
   try {
     const todos = req.query.todos === 'true';
-    const query = todos ? {} : {}; // mismo listado; el param todos=true indica que se pide el listado
+    const query = todos ? {} : {}; 
 
     const pedidos = await Pedido.find(query)
       .sort({ createdAt: -1 })
@@ -90,8 +86,7 @@ const obtenerPedidos = async (req, res, next) => {
   }
 };
 
-// @desc    Obtener pedido por ID
-// @route   GET /api/pedidos/:id
+
 const obtenerPedidoPorId = async (req, res, next) => {
   try {
     const pedido = await Pedido.findById(req.params.id).lean();
@@ -109,9 +104,7 @@ const obtenerPedidoPorId = async (req, res, next) => {
   }
 };
 
-// @desc    Actualizar estado del pedido
-// @route   PUT /api/pedidos/:id/estado
-// @body    { estado } (pendiente, procesando, enviado, entregado, cancelado)
+
 const actualizarEstado = async (req, res, next) => {
   try {
     const { estado } = req.body;

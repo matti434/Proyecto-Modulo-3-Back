@@ -11,7 +11,7 @@ const subirImagenCloudinary = (buffer, mimetype) => {
   });
 };
 
-// GET /api/home - Público
+
 const obtenerContenidoHome = async (req, res, next) => {
   try {
     const [portadaDoc, galeriaItems] = await Promise.all([
@@ -35,7 +35,7 @@ const obtenerContenidoHome = async (req, res, next) => {
   }
 };
 
-// POST /api/home/portada/upload - Admin
+
 const subirPortada = async (req, res, next) => {
   try {
     if (!req.file || !req.file.buffer) {
@@ -61,7 +61,7 @@ const subirPortada = async (req, res, next) => {
   }
 };
 
-// POST /api/home/galeria - Admin
+
 const agregarItemGaleria = async (req, res, next) => {
   try {
     if (!req.file || !req.file.buffer) {
@@ -93,7 +93,7 @@ const agregarItemGaleria = async (req, res, next) => {
   }
 };
 
-// PUT /api/home/galeria/:id - Admin
+
 const actualizarTextoGaleria = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -118,7 +118,7 @@ const actualizarTextoGaleria = async (req, res, next) => {
   }
 };
 
-// POST /api/home/galeria/:id/imagen - Admin
+
 const reemplazarImagenGaleria = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -150,7 +150,7 @@ const reemplazarImagenGaleria = async (req, res, next) => {
   }
 };
 
-// DELETE /api/home/galeria/:id - Admin
+
 const eliminarItemGaleria = async (req, res, next) => {
   try {
     const { id } = req.params;

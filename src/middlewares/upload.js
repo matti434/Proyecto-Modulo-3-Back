@@ -1,7 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 
-// Almacenar en memoria para luego subir a Cloudinary (sin guardar en disco)
+
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {

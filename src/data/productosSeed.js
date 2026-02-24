@@ -1,8 +1,6 @@
-/**
- * Datos de productos para seed y carga inicial (paginación: 15+ por categoría)
- */
+
 const productosEjemplo = [
-  // --- MOTOS (15) ---
+ 
   { nombre: 'Royal Enfield Hunter 350', precio: 4500000, categoria: 'Motos', marca: 'Royal Enfield', modelo: 'Hunter 350', año: 2024, descripcion: 'La Hunter 350 combina estilo retro con tecnología moderna. Motor de 349cc refrigerado por aire.', imagen: '/Galeria/RE-HNTR-350-2-1024x682.jpeg', kilometros: 0, ubicacion: 'Buenos Aires', stock: true, destacado: true },
   { nombre: 'Royal Enfield Classic 350', precio: 5200000, categoria: 'Motos', marca: 'Royal Enfield', modelo: 'Classic 350', año: 2024, descripcion: 'El modelo icónico de Royal Enfield. Estilo clásico británico con motor J-Series.', imagen: '/Galeria/Royal_Enfield_1177.jpg', kilometros: 0, ubicacion: 'Buenos Aires', stock: true, destacado: true },
   { nombre: 'Royal Enfield Meteor 350', precio: 5800000, categoria: 'Motos', marca: 'Royal Enfield', modelo: 'Meteor 350', año: 2023, descripcion: 'Cruiser accesible con motor de 349cc. Perfecta para viajes largos.', imagen: '/Productos/imgCard.jpg', kilometros: 0, ubicacion: 'Córdoba', stock: true, destacado: false },

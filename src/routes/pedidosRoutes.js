@@ -8,7 +8,7 @@ const {
   actualizarEstado
 } = require('../controllers/pedidoController');
 
-// Todas las rutas requieren estar autenticado
+
 router.use(authMiddleware);
 
 router.get('/', obtenerPedidos);

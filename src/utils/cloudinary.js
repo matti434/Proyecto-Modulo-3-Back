@@ -1,12 +1,6 @@
 const cloudinary = require('../config/cloudinary');
 
-/*
- 
-Sube un archivo (buffer) a Cloudinary.
-@param {Buffer} fileBuffer - Contenido del archivo en memoria
-@param {string} folder - Carpeta en Cloudinary (ej: 'productos')
-@returns {Promise<{url: string, publicId: string}>}
-*/
+
 const uploadToCloudinary = async (fileBuffer, folder = 'productos') => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(

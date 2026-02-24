@@ -268,9 +268,7 @@ const obtenerPerfil = async (req, res, next) => {
   }
 };
 
-// @desc    Actualizar perfil del usuario actual
-// @route   PUT /api/auth/perfil
-// @access  Private
+
 const actualizarPerfil = async (req, res, next) => {
   try {
     const { nombreDeUsuario, email, pais, fechaNacimiento } = req.body;

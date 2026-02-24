@@ -1,15 +1,10 @@
-/**
- * Script para cargar datos iniciales en la base de datos
- * Usar cuando tengas MongoDB Atlas configurado
- * 
- * Ejecutar con: npm run seed
- */
+
 
 require('dotenv').config();
 const mongoose = require('mongoose');
 const config = require('../config/config');
 
-// Importar modelos después de conectar
+
 let Usuario, Producto;
 
 const { productosEjemplo } = require('../data/productosSeed');
@@ -28,12 +23,12 @@ async function seed() {
     await mongoose.connect(config.mongoUri);
     console.log('✅ Conectado a MongoDB');
 
-    // Importar modelos después de conectar
+   
     const models = require('../models');    
     Usuario = models.Usuario;
     Producto = models.Producto;
 
-    // Preguntar antes de limpiar datos existentes
+    
     const readline = require('readline');
     const rl = readline.createInterface({
       input: process.stdin,
@@ -47,10 +42,10 @@ async function seed() {
         console.log('🗑️  Datos anteriores eliminados');
       }
 
-      // Crear admin
+  
       const adminExistente = await Usuario.findOne({ email: 'admin@rollingmotors.com' });
       if (!adminExistente) {
-        // Contraseña en texto plano: el modelo Usuario la hashea en pre('save')
+     
         await Usuario.create({
           nombreDeUsuario: 'admin',
           email: 'admin@rollingmotors.com',
@@ -64,7 +59,7 @@ async function seed() {
         console.log('👤 Admin ya existe');
       }
 
-      // Crear usuario de prueba
+    
       const userExistente = await Usuario.findOne({ email: 'usuario@test.com' });
       if (!userExistente) {
         await Usuario.create({
@@ -78,7 +73,7 @@ async function seed() {
         console.log('👤 Usuario de prueba creado');
       }
 
-      // Crear productos
+   
       const productosExistentes = await Producto.countDocuments();
       if (productosExistentes === 0) {
         await Producto.insertMany(productosEjemplo);

@@ -58,7 +58,7 @@ const usuarioSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Hash password antes de guardar
+
 usuarioSchema.pre('save', async function () {
     if (!this.isModified('password')) return;
 
@@ -66,17 +66,17 @@ usuarioSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Método para comparar passwords
+
 usuarioSchema.methods.compararPassword = async function (passwordIngresada) {
     return await bcrypt.compare(passwordIngresada, this.password);
 };
 
-// Método para verificar si es admin
+
 usuarioSchema.methods.esAdmin = function () {
     return this.role === 'admin';
 };
 
-// Método para verificar si está suspendido
+
 usuarioSchema.methods.estaSuspendido = function () {
     return this.suspendido === true;
 };

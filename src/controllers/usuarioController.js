@@ -1,8 +1,5 @@
 const { Usuario } = require('../models');
 
-// @desc Listar usuario
-// @route GET / api/usuarios
-// @access Admin
 const obtenerUsuarios = async (req, res, next) => {
     try {
         const { buscar, suspendidos } = req.query;
@@ -21,7 +18,7 @@ const obtenerUsuarios = async (req, res, next) => {
 
         const usuarios = await Usuario.find(query).sort({ createdAt: -1 });
 
-        // Mapeamos para no enviar el password
+       
         const datos = usuarios.map(u => ({
             _id: u._id,
             id: u._id,
@@ -45,9 +42,7 @@ const obtenerUsuarios = async (req, res, next) => {
     }
 };
 
-// @desc Obtener usuario por ID
-// @route GET /api/usuarios/:id
-// @access admin
+
 const obtenerUsuarioPorId = async (req, res, next) => {
     try {
         const usuario = await Usuario.findById(req.params.id);
@@ -82,9 +77,7 @@ const obtenerUsuarioPorId = async (req, res, next) => {
     }
 };
 
-// @desc    Actualizar usuario
-// @route   PUT /api/usuarios/:id
-// @access  Admin
+
 const actualizarUsuario = async (req, res, next) => {
     try {
         const { nombreDeUsuario, email, pais, fechaNacimiento, role } = req.body;
@@ -99,7 +92,7 @@ const actualizarUsuario = async (req, res, next) => {
             });
         }
 
-        // Validar si el email ya existe en otro usuario
+   
         if (email && email !== usuario.email) {
             const emailExiste = await Usuario.findOne({ email: email.toLowerCase() });
             if (emailExiste) {
@@ -151,9 +144,6 @@ const actualizarUsuario = async (req, res, next) => {
     }
 };
 
-// @desc    Eliminar usuario
-// @route   DELETE /api/usuarios/:id
-// @access  Admin
 const eliminarUsuario = async (req, res, next) => {
     try {
         const usuario = await Usuario.findById(req.params.id);
@@ -165,7 +155,7 @@ const eliminarUsuario = async (req, res, next) => {
             });
         }
 
-        // Seguridad: No permitir borrar otros admins
+ 
         if (usuario.role === 'admin') {
             return res.status(403).json({
                 exito: false,
@@ -184,9 +174,7 @@ const eliminarUsuario = async (req, res, next) => {
     }
 };
 
-// @desc    Suspender usuario
-// @route   POST /api/usuarios/:id/suspender
-// @access  Admin
+
 const suspenderUsuario = async (req, res, next) => {
     try {
         const usuario = await Usuario.findById(req.params.id);
@@ -226,9 +214,7 @@ const suspenderUsuario = async (req, res, next) => {
     }
 };
 
-// @desc    Reactivar usuario
-// @route   POST /api/usuarios/:id/reactivar
-// @access  Admin
+
 const reactivarUsuario = async (req, res, next) => {
     try {
         const usuario = await Usuario.findById(req.params.id);

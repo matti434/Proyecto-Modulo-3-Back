@@ -4,10 +4,10 @@ const config = require('./config/config');
 
 const startServer = async () => {
     try {
-        // Conectar a MongoDB
+   
         await connectDB();
 
-        // Iniciar servidor
+       
         app.listen(config.port, () => {
             console.log('=========================================');
             console.log(`🚀 Servidor corriendo en puerto ${config.port}`);

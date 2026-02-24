@@ -1,12 +1,10 @@
-/** * Script para crear el primer usuario administrador 
- * Ejecutar con: npm run crear-admin 
- */
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const config = require('../config/config');
 
-// Modelo de Usuario (simplificado para el script)
+
 const usuarioSchema = new mongoose.Schema({
     nombreDeUsuario: { type: String, require: true, unique: true },
     email: { type: String, require: true, unique: true },
@@ -19,11 +17,11 @@ const usuarioSchema = new mongoose.Schema({
 
 const Usuario = mongoose.model('Usuario', usuarioSchema);
 
-// Datos del administrado (puedes modificarlos)
+
 const adminData = {
     nombreDeUsuario: 'admin',
     email: 'admin@rollingmotors.com',
-    password: 'Admin123!', // Cambia esta contraseña 
+    password: 'Admin123!', 
     pais: 'Argentina',
     fechaNacimiento: new Date('1990-01-01'),
     role: 'admin'
@@ -44,7 +42,7 @@ async function crearAdmin() {
             process.exit(0);
         }
         
-        // Verificar si el email o usuario ya existen
+        
         const emailExistente = await Usuario.findOne({ email: adminData.email });
         if (emailExistente) {
              console.log(`⚠️  El email ${adminData.email} ya está en uso`);
@@ -57,11 +55,11 @@ async function crearAdmin() {
             process.exit(1);
         }
 
-        // Hashear contraseña
+        
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(adminData.password, salt);
 
-        // Crear admin 
+      
         const nuevoAdmin = new Usuario({
             ...adminData,
             password: hashedPassword

@@ -1,8 +1,6 @@
 const { Producto } = require("../models");
 
-// @desc    Obtener todos los productos
-// @route   GET /api/productos
-// @access  Public
+
 const obtenerProducto = async (req, res, next) => {
   try {
     const {
@@ -19,7 +17,7 @@ const obtenerProducto = async (req, res, next) => {
 
     let query = {};
 
-    // filtros
+   
     if (categoria) {
       query.categoria = { $regex: categoria, $options: "i" };
     }
@@ -38,14 +36,14 @@ const obtenerProducto = async (req, res, next) => {
       query.stock = false;
     }
 
-    // Rango de precio
+  
     if (precioMin || precioMax) {
       query.precio = {};
       if (precioMin) query.precio.$gte = Number(precioMin);
       if (precioMax) query.precio.$lte = Number(precioMax);
     }
 
-    // Busqueda por texto
+   
     if (buscar) {
       query.$or = [
         { nombre: { $regex: buscar, $options: "i" } },
@@ -57,21 +55,21 @@ const obtenerProducto = async (req, res, next) => {
 
     let queryBuilder = Producto.find(query);
 
-    // Ordenar por recientes
+   
     if (reciente === "true") {
       queryBuilder = queryBuilder.sort({ createdAt: -1 });
     } else {
       queryBuilder = queryBuilder.sort({ destacado: -1, createdAt: -1 });
     }
 
-    // Limitar resultados
+    
     if (limite) {
       queryBuilder = queryBuilder.limit(Number(limite));
     }
 
     const productos = await queryBuilder;
 
-    // Formatear respuesta para compatibilidad con frontend
+   
     const productosResponse = productos.map((p) => ({
       _id: p._id,
       id: p._id,
@@ -99,9 +97,7 @@ const obtenerProducto = async (req, res, next) => {
   }
 };
 
-// @desc    Obtener producto por ID
-// @route   GET /api/productos/:id
-// @access  Public
+
 const obtenerProductoPorId = async (req, res, next) => {
   try {
     const producto = await Producto.findById(req.params.id);
@@ -136,9 +132,7 @@ const obtenerProductoPorId = async (req, res, next) => {
   }
 };
 
-// @desc    Crear producto
-// @route   POST /api/productos
-// @access  Admin
+
 const crearProducto = async (req, res, next) => {
   try {
     const {
@@ -200,9 +194,7 @@ const crearProducto = async (req, res, next) => {
   }
 };
 
-// @desc    Actualizar producto
-// @route   PUT /api/productos/:id
-// @access  Admin
+
 const actualizarProducto = async (req, res, next) => {
   try {
     const producto = await Producto.findById(req.params.id);
@@ -262,9 +254,6 @@ const actualizarProducto = async (req, res, next) => {
   }
 };
 
-// @desc    Eliminar producto
-// @route   DELETE /api/productos/:id
-// @access  Admin
 const eliminarProducto = async (req, res, next) => {
   try {
     const producto = await Producto.findById(req.params.id);

@@ -30,17 +30,17 @@ const carritoSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Virtual para calcular el total
+
 carritoSchema.virtual('total').get(function() {
   return this.items.reduce((sum, item) => sum + (item.precioUnitario * item.cantidad), 0);
 });
 
-// Virtual para calcular cantidad total de items
+
 carritoSchema.virtual('cantidadTotal').get(function() {
   return this.items.reduce((sum, item) => sum + item.cantidad, 0);
 });
 
-// Asegurar que los virtuals se incluyan en JSON
+
 carritoSchema.set('toJSON', { virtuals: true });
 carritoSchema.set('toObject', { virtuals: true });
 

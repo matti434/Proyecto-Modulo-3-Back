@@ -10,7 +10,7 @@ const {
     reactivarUsuario
 } = require('../controllers/usuarioController');
 
-// Todas las rutas requieren auth + admin
+
 router.use(authMiddleware, adminMiddleware);
 
 router.get('/', obtenerUsuarios);

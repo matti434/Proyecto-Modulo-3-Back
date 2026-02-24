@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 
-// Generar token JWT
+
 const generarToken = (usuario) => {
   return jwt.sign(
     {
