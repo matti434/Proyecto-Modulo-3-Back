@@ -9,7 +9,7 @@ const app = express();
 
 const allowedOrigins = [
     config.frontendUrl,
-    'https://deft-kitsune-9b5f8c.netlify.app/', 
+    'https://deft-kitsune-9b5f8c.netlify.app', 
     'http://localhost:5000',
     'http://localhost:5173',
 ];
