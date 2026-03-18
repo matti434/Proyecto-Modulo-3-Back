@@ -1,70 +1,44 @@
-const { Pedido } = require('../models');
-
-const ESTADOS_VALIDOS = ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'];
-const AÑO_MIN = 1930;
-const AÑO_MAX = 2025;
+const { Pedido, Carrito } = require('../models');
 
 
 const crearPedido = async (req, res, next) => {
   try {
-    const { titulo, descripcion, fecha } = req.body;
+    const { items, subtotal, envio } = req.body;
 
-    if (!titulo || typeof titulo !== 'string') {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         exito: false,
-        mensaje: 'El título es requerido'
-      });
-    }
-    const tituloTrim = titulo.trim();
-    if (tituloTrim.length > 30) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: 'El título no puede superar 30 caracteres'
+        mensaje: 'El carrito está vacío'
       });
     }
 
-    if (!descripcion || typeof descripcion !== 'string') {
-      return res.status(400).json({
-        exito: false,
-        mensaje: 'La descripción es requerida'
-      });
-    }
-    const descripcionTrim = descripcion.trim();
-    if (descripcionTrim.length > 150) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: 'La descripción no puede superar 150 caracteres'
-      });
-    }
+    const itemsValidados = items.map(item => ({
+      productoId: item.productoId,
+      cantidad: Number(item.cantidad) || 1,
+      precioUnitario: Number(item.precioUnitario) || 0
+    }));
 
-    if (fecha === undefined || fecha === null) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: 'La fecha es requerida'
-      });
-    }
-    const fechaDate = new Date(fecha);
-    if (Number.isNaN(fechaDate.getTime())) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: 'La fecha no es válida'
-      });
-    }
-    const año = fechaDate.getFullYear();
-    if (año < AÑO_MIN || año > AÑO_MAX) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: `La fecha debe tener un año entre ${AÑO_MIN} y ${AÑO_MAX}`
-      });
-    }
+    const sub = Number(subtotal) ?? 0;
+    const env = Number(envio) ?? 0;
 
     const pedido = await Pedido.create({
-      titulo: tituloTrim,
-      descripcion: descripcionTrim,
-      fecha: fechaDate
+      usuario: req.usuario._id,
+      items: itemsValidados,
+      subtotal: sub,
+      envio: env,
+      impuestos: 0
     });
 
-    res.status(201).json(pedido);
+    await Carrito.findOneAndUpdate(
+      { usuario: req.usuario._id },
+      { $set: { items: [] } }
+    );
+
+    res.status(201).json({
+      exito: true,
+      transaccionId: pedido.transaccionId,
+      mensaje: 'Pedido creado correctamente'
+    });
   } catch (error) {
     next(error);
   }
