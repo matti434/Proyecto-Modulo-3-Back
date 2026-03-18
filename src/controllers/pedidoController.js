@@ -9,6 +9,7 @@ const crearPedido = async (req, res, next) => {
   try {
     const { titulo, descripcion, fecha } = req.body;
 
+    
     if (!titulo || typeof titulo !== 'string') {
       return res.status(400).json({
         exito: false,
