@@ -48,9 +48,10 @@ const crearPedido = async (req, res, next) => {
 const obtenerPedidos = async (req, res, next) => {
   try {
     const todos = req.query.todos === 'true';
-    const query = todos ? {} : {}; 
+    const query = todos ? {} : { usuario: req.usuario._id };
 
     const pedidos = await Pedido.find(query)
+      .populate('items.productoId', 'nombre precio imagen')
       .sort({ createdAt: -1 })
       .lean();
 
