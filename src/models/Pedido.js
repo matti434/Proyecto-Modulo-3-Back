@@ -41,6 +41,15 @@ const pedidoSchema = new mongoose.Schema({
   impuestos: {
     type: Number,
     default: 0
+  },
+  estadoEnvio: {
+    type: String,
+    enum: ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'],
+    default: 'pendiente'
+  },
+  fechaCompra: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true
