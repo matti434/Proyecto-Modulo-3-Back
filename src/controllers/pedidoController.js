@@ -64,12 +64,22 @@ const obtenerPedidos = async (req, res, next) => {
 
 const obtenerPedidoPorId = async (req, res, next) => {
   try {
-    const pedido = await Pedido.findById(req.params.id).lean();
+    const pedido = await Pedido.findById(req.params.id)
+      .populate('items.productoId', 'nombre precio imagen')
+      .lean();
 
     if (!pedido) {
       return res.status(404).json({
         exito: false,
         mensaje: 'Pedido no encontrado'
+      });
+    }
+
+    const esAdmin = req.usuario?.rol === 'admin';
+    if (!esAdmin && pedido.usuario?.toString() !== req.usuario._id.toString()) {
+      return res.status(403).json({
+        exito: false,
+        mensaje: 'No tienes permiso para ver este pedido'
       });
     }
 
