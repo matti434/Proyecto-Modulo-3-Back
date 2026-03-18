@@ -116,9 +116,11 @@ const actualizarEstado = async (req, res, next) => {
       });
     }
 
+    const updateData = { estado }; // ← PREPARACIÓN
+
     const pedido = await Pedido.findByIdAndUpdate(
       req.params.id,
-      { estado },
+      updateData,
       { new: true }
     ).lean();
 
@@ -138,6 +140,7 @@ const actualizarEstado = async (req, res, next) => {
     next(error);
   }
 };
+
 
 module.exports = {
   obtenerPedidos,
