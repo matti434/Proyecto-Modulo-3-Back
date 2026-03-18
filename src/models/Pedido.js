@@ -33,6 +33,14 @@ const pedidoSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
+  },
+  transaccionId: {
+    type: String,
+    default: () => `TXN-${Date.now()}`
+  },
+  impuestos: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true
