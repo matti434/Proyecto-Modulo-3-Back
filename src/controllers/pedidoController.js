@@ -90,6 +90,8 @@ const obtenerPedidoPorId = async (req, res, next) => {
 };
 
 
+const ESTADOS_VALIDOS = ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'];
+
 const actualizarEstado = async (req, res, next) => {
   try {
     const { estado } = req.body;
@@ -103,7 +105,7 @@ const actualizarEstado = async (req, res, next) => {
 
     const pedido = await Pedido.findByIdAndUpdate(
       req.params.id,
-      { estado },
+      { estadoEnvio: estado },
       { new: true }
     ).lean();
 
