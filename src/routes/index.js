@@ -20,6 +20,5 @@ router.use('/productos', productosRoutes);
 router.use('/pedidos', pedidosRoutes);
 router.use('/carrito', carritoRoutes);
 router.use('/home', homeRoutes);
-router.use('/contacto', contactoRoutes);
 
 module.exports = router;

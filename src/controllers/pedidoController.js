@@ -5,9 +5,7 @@ const crearPedido = async (req, res, next) => {
   try {
     const { items, subtotal, envio } = req.body;
 
-
-    
-    if (!titulo || typeof titulo !== 'string') {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         exito: false,
         mensaje: 'El carrito está vacío'
@@ -105,14 +103,9 @@ const actualizarEstado = async (req, res, next) => {
       });
     }
 
-    const updateData = { 
-      estado,
-      estadoEnvio: estado   // ← CAMBIO REAL
-    };
-
     const pedido = await Pedido.findByIdAndUpdate(
       req.params.id,
-      updateData,
+      { estado },
       { new: true }
     ).lean();
 
