@@ -13,15 +13,18 @@ const pedidoItemSchema = new mongoose.Schema({
   },
   precioUnitario: {
     type: Number,
-    required: true
+
+    required: true,
+    min: 0
   }
-}, { _id: true });
+}, { _id: false });
 
 const pedidoSchema = new mongoose.Schema({
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario',
     required: true
+
   },
   items: [pedidoItemSchema],
   subtotal: {
@@ -34,15 +37,18 @@ const pedidoSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
-  transaccionId: {
-    type: String,
-    default: () => `TXN-${Date.now()}`
-  },
   impuestos: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0
   },
-  estadoEnvio: {
+  transaccionId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  estado: {
+
     type: String,
     enum: ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'],
     default: 'pendiente'
@@ -56,4 +62,12 @@ const pedidoSchema = new mongoose.Schema({
 });
 
 
+pedidoSchema.pre('save', function (next) {
+  if (this.isNew && !this.transaccionId) {
+    this.transaccionId = this._id.toString();
+  }
+  next();
+});
+
 module.exports = mongoose.model('Pedido', pedidoSchema);
+

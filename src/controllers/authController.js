@@ -146,9 +146,10 @@ const registro = async (req, res, next) => {
     res.cookie(COOKIE_NAME, token, getCookieOptions());
 
     const usuarioResponse = {
-      _id: usuario._id,
       id: usuario._id,
+      _id: usuario._id,
       nombreDeUsuario: usuario.nombreDeUsuario,
+      nombre: usuario.nombre || usuario.nombreDeUsuario,
       email: usuario.email,
       pais: usuario.pais,
       fechaNacimiento: usuario.fechaNacimiento,
@@ -212,9 +213,10 @@ const login = async (req, res, next) => {
     res.cookie(COOKIE_NAME, token, getCookieOptions());
 
     const usuarioResponse = {
-      _id: usuario._id,
       id: usuario._id,
+      _id: usuario._id,
       nombreDeUsuario: usuario.nombreDeUsuario,
+      nombre: usuario.nombre || usuario.nombreDeUsuario,
       email: usuario.email,
       pais: usuario.pais,
       fechaNacimiento: usuario.fechaNacimiento,
@@ -252,9 +254,10 @@ const obtenerPerfil = async (req, res, next) => {
     res.json({
       exito: true,
       usuario: {
-        _id: usuario._id,
         id: usuario._id,
+        _id: usuario._id,
         nombreDeUsuario: usuario.nombreDeUsuario,
+        nombre: usuario.nombre || usuario.nombreDeUsuario,
         email: usuario.email,
         pais: usuario.pais,
         fechaNacimiento: usuario.fechaNacimiento,
@@ -306,9 +309,10 @@ const actualizarPerfil = async (req, res, next) => {
       exito: true,
       mensaje: 'Perfil actualizado',
       usuario: {
-        _id: usuario._id,
         id: usuario._id,
+        _id: usuario._id,
         nombreDeUsuario: usuario.nombreDeUsuario,
+        nombre: usuario.nombre || usuario.nombreDeUsuario,
         email: usuario.email,
         pais: usuario.pais,
         fechaNacimiento: usuario.fechaNacimiento,
