@@ -33,6 +33,7 @@ const startServer = async () => {
             console.log('  PUT    /api/home/galeria/:id (admin)');
             console.log('  POST   /api/home/galeria/:id/imagen (admin)');
             console.log('  DELETE /api/home/galeria/:id (admin)');
+            console.log('  POST   /api/contacto');
             console.log('=========================================');
         });
     } catch (error) {
@@ -53,4 +54,3 @@ process.on('uncaughtException', (err) => {
 });
 
 startServer();
-
