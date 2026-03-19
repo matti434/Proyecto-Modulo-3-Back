@@ -9,6 +9,7 @@ const crearPedido = async (req, res, next) => {
   try {
     const { titulo, descripcion, fecha } = req.body;
 
+    
     if (!titulo || typeof titulo !== 'string') {
       return res.status(400).json({
         exito: false,
@@ -116,9 +117,14 @@ const actualizarEstado = async (req, res, next) => {
       });
     }
 
+    const updateData = { 
+      estado,
+      estadoEnvio: estado   // ← CAMBIO REAL
+    };
+
     const pedido = await Pedido.findByIdAndUpdate(
       req.params.id,
-      { estado },
+      updateData,
       { new: true }
     ).lean();
 
