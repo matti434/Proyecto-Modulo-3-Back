@@ -1,6 +1,5 @@
 const { Producto } = require("../models");
 
-
 const obtenerProducto = async (req, res, next) => {
   try {
     const {
@@ -17,7 +16,6 @@ const obtenerProducto = async (req, res, next) => {
 
     let query = {};
 
-   
     if (categoria) {
       query.categoria = { $regex: categoria, $options: "i" };
     }
@@ -36,14 +34,12 @@ const obtenerProducto = async (req, res, next) => {
       query.stock = false;
     }
 
-  
     if (precioMin || precioMax) {
       query.precio = {};
       if (precioMin) query.precio.$gte = Number(precioMin);
       if (precioMax) query.precio.$lte = Number(precioMax);
     }
 
-   
     if (buscar) {
       query.$or = [
         { nombre: { $regex: buscar, $options: "i" } },
@@ -55,21 +51,18 @@ const obtenerProducto = async (req, res, next) => {
 
     let queryBuilder = Producto.find(query);
 
-   
     if (reciente === "true") {
       queryBuilder = queryBuilder.sort({ createdAt: -1 });
     } else {
       queryBuilder = queryBuilder.sort({ destacado: -1, createdAt: -1 });
     }
 
-    
     if (limite) {
       queryBuilder = queryBuilder.limit(Number(limite));
     }
 
     const productos = await queryBuilder;
 
-   
     const productosResponse = productos.map((p) => ({
       _id: p._id,
       id: p._id,
@@ -84,6 +77,7 @@ const obtenerProducto = async (req, res, next) => {
       kilometros: p.kilometros,
       ubicacion: p.ubicacion,
       stock: p.stock,
+      stockDisponible: p.stockDisponible ?? 0,
       destacado: p.destacado,
       fechaCreacion: p.createdAt,
       fechaModificacion: p.updatedAt,
@@ -96,7 +90,6 @@ const obtenerProducto = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const obtenerProductoPorId = async (req, res, next) => {
   try {
@@ -123,6 +116,7 @@ const obtenerProductoPorId = async (req, res, next) => {
       kilometros: producto.kilometros,
       ubicacion: producto.ubicacion,
       stock: producto.stock,
+      stockDisponible: producto.stockDisponible ?? 0,
       destacado: producto.destacado,
       fechaCreacion: producto.createdAt,
       fechaModificacion: producto.updatedAt,
@@ -131,7 +125,6 @@ const obtenerProductoPorId = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const crearProducto = async (req, res, next) => {
   try {
@@ -147,11 +140,17 @@ const crearProducto = async (req, res, next) => {
       kilometros,
       ubicacion,
       stock,
+      stockDisponible,
       destacado,
     } = req.body;
 
     const km = Number(kilometros);
-    const kilometrosValido = kilometros !== '' && kilometros !== undefined && kilometros !== null && !Number.isNaN(km) && km >= 0;
+    const kilometrosValido =
+      kilometros !== "" &&
+      kilometros !== undefined &&
+      kilometros !== null &&
+      !Number.isNaN(km) &&
+      km >= 0;
 
     const producto = await Producto.create({
       nombre,
@@ -165,6 +164,7 @@ const crearProducto = async (req, res, next) => {
       kilometros: kilometrosValido ? km : undefined,
       ubicacion,
       stock: stock !== undefined ? stock : true,
+      stockDisponible: stockDisponible ?? 0,
       destacado: destacado !== undefined ? destacado : false,
     });
 
@@ -185,6 +185,7 @@ const crearProducto = async (req, res, next) => {
         kilometros: producto.kilometros,
         ubicacion: producto.ubicacion,
         stock: producto.stock,
+        stockDisponible: producto.stockDisponible ?? 0,
         destacado: producto.destacado,
         fechaCreacion: producto.createdAt,
       },
@@ -193,7 +194,6 @@ const crearProducto = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const actualizarProducto = async (req, res, next) => {
   try {
@@ -207,19 +207,28 @@ const actualizarProducto = async (req, res, next) => {
     }
 
     const datosActualizar = { ...req.body };
-    if (datosActualizar.precio !== undefined && datosActualizar.precio !== '') {
+    if (datosActualizar.precio !== undefined && datosActualizar.precio !== "") {
       datosActualizar.precio = Number(datosActualizar.precio);
     }
-    if (datosActualizar.año !== undefined && datosActualizar.año !== '') {
+    if (datosActualizar.año !== undefined && datosActualizar.año !== "") {
       datosActualizar.año = Number(datosActualizar.año);
     }
-    if ('kilometros' in datosActualizar) {
+    if ("kilometros" in datosActualizar) {
       const km = Number(datosActualizar.kilometros);
-      if (datosActualizar.kilometros === '' || datosActualizar.kilometros == null || Number.isNaN(km) || km < 0) {
+      if (
+        datosActualizar.kilometros === "" ||
+        datosActualizar.kilometros == null ||
+        Number.isNaN(km) ||
+        km < 0
+      ) {
         delete datosActualizar.kilometros;
       } else {
         datosActualizar.kilometros = km;
       }
+    }
+    if ("stockDisponible" in datosActualizar) {
+      const sd = Number(datosActualizar.stockDisponible);
+      datosActualizar.stockDisponible = !Number.isNaN(sd) && sd >= 0 ? sd : 0;
     }
 
     const productoActualizado = await Producto.findByIdAndUpdate(
@@ -245,6 +254,7 @@ const actualizarProducto = async (req, res, next) => {
         kilometros: productoActualizado.kilometros,
         ubicacion: productoActualizado.ubicacion,
         stock: productoActualizado.stock,
+        stockDisponible: productoActualizado.stockDisponible ?? 0,
         destacado: productoActualizado.destacado,
         fechaModificacion: productoActualizado.updatedAt,
       },

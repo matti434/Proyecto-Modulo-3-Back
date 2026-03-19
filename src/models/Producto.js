@@ -47,6 +47,11 @@ const productoSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  stockDisponible: {
+    type: Number,
+    default: 0,
+    min: [0, 'El stock no puede ser negativo']
+  },
   destacado: {
     type: Boolean,
     default: false
@@ -59,6 +64,7 @@ productoSchema.index({ categoria: 1 });
 productoSchema.index({ marca: 1 });
 productoSchema.index({ destacado: 1 });
 productoSchema.index({ stock: 1 });
+productoSchema.index({ stockDisponible: 1 });
 productoSchema.index({ nombre: 'text', descripcion: 'text', marca: 'text', modelo: 'text' });
 
 module.exports = mongoose.model('Producto', productoSchema);
