@@ -8,7 +8,9 @@ const pedidosRoutes = require('./pedidosRoutes');
 const carritoRoutes = require('./carritoRoutes');
 const homeRoutes = require('./homeRoutes');
 const contactoRoutes = require('./contactoRoutes');
+
 const pagosRoutes = require('./pagosRoutes');
+
 
 router.use('/auth', authRoutes);
 router.use('/contacto', contactoRoutes);
@@ -18,5 +20,6 @@ router.use('/productos', productosRoutes);
 router.use('/pedidos', pedidosRoutes);
 router.use('/carrito', carritoRoutes);
 router.use('/home', homeRoutes);
+router.use('/contacto', contactoRoutes);
 
 module.exports = router;
