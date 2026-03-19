@@ -1,29 +1,49 @@
 const mongoose = require('mongoose');
 
+const pedidoItemSchema = new mongoose.Schema({
+  productoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Producto',
+    required: true
+  },
+  cantidad: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  precioUnitario: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+}, { _id: false });
+
 const pedidoSchema = new mongoose.Schema({
-  titulo: {
-    type: String,
-    required: [true, 'El título es requerido'],
-    trim: true,
-    maxlength: [30, 'El título no puede superar 30 caracteres']
+  usuario: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario',
+    required: true
   },
-  descripcion: {
-    type: String,
-    required: [true, 'La descripción es requerida'],
-    trim: true,
-    maxlength: [150, 'La descripción no puede superar 150 caracteres']
+  items: [pedidoItemSchema],
+  subtotal: {
+    type: Number,
+    required: true,
+    min: 0
   },
-  fecha: {
-    type: Date,
-    required: [true, 'La fecha es requerida'],
-    validate: {
-      validator: function (v) {
-        if (!v) return false;
-        const año = v instanceof Date ? v.getFullYear() : new Date(v).getFullYear();
-        return año >= 1930 && año <= 2025;
-      },
-      message: 'La fecha debe tener un año entre 1930 y 2025'
-    }
+  envio: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  impuestos: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  transaccionId: {
+    type: String,
+    unique: true,
+    sparse: true
   },
   estado: {
     type: String,
@@ -32,6 +52,13 @@ const pedidoSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+pedidoSchema.pre('save', function (next) {
+  if (this.isNew && !this.transaccionId) {
+    this.transaccionId = this._id.toString();
+  }
+  next();
 });
 
 module.exports = mongoose.model('Pedido', pedidoSchema);

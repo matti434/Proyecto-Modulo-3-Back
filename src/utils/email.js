@@ -15,4 +15,24 @@ async function enviarCodigoRecuperacion(emailDestino, codigo) {
     }
 }
 
-module.exports = { enviarCodigoRecuperacion };
+async function enviarMensajeContacto({ nombre, apellido, telefono, email, mensaje }) {
+    const emailDestino = process.env.CONTACTO_EMAIL || process.env.EMAIL_FROM || 'onboarding@resend.dev';
+    const { data, error } = await resend.emails.send({
+        from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+        to: emailDestino,
+        subject: `Contacto Rolling Motors - ${nombre} ${apellido}`,
+        html: `
+            <p><strong>Nombre:</strong> ${nombre} ${apellido}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Teléfono:</strong> ${telefono || 'No indicado'}</p>
+            <p><strong>Mensaje:</strong></p>
+            <p>${mensaje}</p>
+        `
+    });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+}
+
+module.exports = { enviarCodigoRecuperacion, enviarMensajeContacto };

@@ -5,7 +5,8 @@ const {
   obtenerCarrito,
   agregarItem,
   actualizarCantidad,
-  eliminarItem
+  eliminarItem,
+  vaciarCarrito
 } = require('../controllers/carritoController');
 
 router.use(authMiddleware);
@@ -13,6 +14,7 @@ router.use(authMiddleware);
 router.get('/', obtenerCarrito);
 router.post('/', agregarItem);
 router.put('/:itemId', actualizarCantidad);
+router.delete('/', vaciarCarrito);
 router.delete('/:itemId', eliminarItem);
 
 module.exports = router;

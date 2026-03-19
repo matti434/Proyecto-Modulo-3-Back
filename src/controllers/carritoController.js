@@ -14,14 +14,26 @@ const obtenerCarrito = async (req, res, next) => {
       });
     }
 
-    const itemsFormateados = carrito.items.map((item) => ({
-      _id: item._id,
-      id: item._id,
-      producto: item.producto,
-      cantidad: item.cantidad,
-      precioUnitario: item.precioUnitario,
-      subtotal: item.cantidad * item.precioUnitario,
-    }));
+    const itemsFormateados = carrito.items.map((item) => {
+      const prod = item.producto;
+      const productoFormateado = prod ? {
+        _id: prod._id,
+        id: prod._id,
+        nombre: prod.nombre,
+        marca: prod.marca,
+        modelo: prod.modelo,
+        imagen: prod.imagen,
+        precio: prod.precio
+      } : null;
+      return {
+        _id: item._id,
+        id: item._id,
+        producto: productoFormateado,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        subtotal: item.cantidad * item.precioUnitario
+      };
+    });
 
     res.json({
       _id: carrito._id,
@@ -165,9 +177,34 @@ const eliminarItem = async (req, res, next) => {
   }
 };
 
+const vaciarCarrito = async (req, res, next) => {
+  try {
+    const carrito = await Carrito.findOne({ usuario: req.usuario._id });
+
+    if (!carrito) {
+      return res.status(404).json({
+        exito: false,
+        mensaje: "Carrito no encontrado",
+      });
+    }
+
+    carrito.items = [];
+    await carrito.save();
+
+    res.json({
+      exito: true,
+      mensaje: "Carrito vaciado",
+      items: []
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   obtenerCarrito,
   agregarItem,
   actualizarCantidad,
   eliminarItem,
+  vaciarCarrito,
 };

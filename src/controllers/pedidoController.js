@@ -75,7 +75,7 @@ const obtenerPedidoPorId = async (req, res, next) => {
       });
     }
 
-    const esAdmin = req.usuario?.rol === 'admin';
+    const esAdmin = req.usuario?.role === 'admin';
     if (!esAdmin && pedido.usuario?.toString() !== req.usuario._id.toString()) {
       return res.status(403).json({
         exito: false,
@@ -105,7 +105,7 @@ const actualizarEstado = async (req, res, next) => {
 
     const pedido = await Pedido.findByIdAndUpdate(
       req.params.id,
-      { estadoEnvio: estado },
+      { estado },
       { new: true }
     ).lean();
 
