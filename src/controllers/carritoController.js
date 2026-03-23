@@ -17,7 +17,7 @@ const obtenerCarrito = async (req, res, next) => {
 
     const itemsFormateados = carrito.items.map((item) => {
       const prod = item.producto;
-      const precioUnit = precioParaDesarrollo(item.precioUnitario);
+      const precioUnit = Number(precioParaDesarrollo(item.precioUnitario));
       const productoFormateado = prod ? {
         _id: prod._id,
         id: prod._id,
@@ -25,7 +25,7 @@ const obtenerCarrito = async (req, res, next) => {
         marca: prod.marca,
         modelo: prod.modelo,
         imagen: prod.imagen,
-        precio: precioParaDesarrollo(prod.precio)
+        precio: Number(precioParaDesarrollo(prod.precio))
       } : null;
       return {
         _id: item._id,
