@@ -36,7 +36,7 @@ async function crearPreferencia(items, pedidoId, email) {
       failure: `${frontendUrl}/pago-fallo`,
       pending: `${frontendUrl}/pago-pendiente`
     },
-    auto_return: 'approved',
+    auto_return: frontendUrl.includes("localhost") ? undefined : "approved",
     external_reference: String(pedidoId),
     notification_url: `${backendUrl}/api/pagos/webhook`
   };
