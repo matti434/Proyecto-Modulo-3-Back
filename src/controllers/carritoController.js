@@ -1,4 +1,5 @@
 const { Carrito, Producto } = require("../models");
+const { precioParaDesarrollo } = require("../utils/precioDesarrollo");
 
 const obtenerCarrito = async (req, res, next) => {
   try {
@@ -16,6 +17,7 @@ const obtenerCarrito = async (req, res, next) => {
 
     const itemsFormateados = carrito.items.map((item) => {
       const prod = item.producto;
+      const precioUnit = precioParaDesarrollo(item.precioUnitario);
       const productoFormateado = prod ? {
         _id: prod._id,
         id: prod._id,
@@ -23,22 +25,24 @@ const obtenerCarrito = async (req, res, next) => {
         marca: prod.marca,
         modelo: prod.modelo,
         imagen: prod.imagen,
-        precio: prod.precio
+        precio: precioParaDesarrollo(prod.precio)
       } : null;
       return {
         _id: item._id,
         id: item._id,
         producto: productoFormateado,
         cantidad: item.cantidad,
-        precioUnitario: item.precioUnitario,
-        subtotal: item.cantidad * item.precioUnitario
+        precioUnitario: precioUnit,
+        subtotal: item.cantidad * precioUnit
       };
     });
+
+    const totalFormateado = itemsFormateados.reduce((sum, item) => sum + item.subtotal, 0);
 
     res.json({
       _id: carrito._id,
       items: itemsFormateados,
-      total: carrito.total,
+      total: totalFormateado,
       cantidadTotal: carrito.cantidadTotal,
     });
   } catch (error) {
@@ -80,13 +84,15 @@ const agregarItem = async (req, res, next) => {
       (item) => item.producto.toString() === productoId,
     );
 
+    const precioParaGuardar = precioParaDesarrollo(producto.precio);
+
     if (itemIndex > -1) {
       carrito.items[itemIndex].cantidad += cantidad;
     } else {
       carrito.items.push({
         producto: productoId,
         cantidad,
-        precioUnitario: producto.precio,
+        precioUnitario: precioParaGuardar,
       });
     }
 

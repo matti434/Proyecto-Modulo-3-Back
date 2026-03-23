@@ -1,4 +1,5 @@
 const { Producto } = require("../models");
+const { precioParaDesarrollo } = require("../utils/precioDesarrollo");
 
 const obtenerProducto = async (req, res, next) => {
   try {
@@ -67,7 +68,7 @@ const obtenerProducto = async (req, res, next) => {
       _id: p._id,
       id: p._id,
       nombre: p.nombre,
-      precio: p.precio,
+      precio: precioParaDesarrollo(p.precio),
       categoria: p.categoria,
       marca: p.marca,
       modelo: p.modelo,
@@ -106,7 +107,7 @@ const obtenerProductoPorId = async (req, res, next) => {
       _id: producto._id,
       id: producto._id,
       nombre: producto.nombre,
-      precio: producto.precio,
+      precio: precioParaDesarrollo(producto.precio),
       categoria: producto.categoria,
       marca: producto.marca,
       modelo: producto.modelo,
@@ -175,7 +176,7 @@ const crearProducto = async (req, res, next) => {
         _id: producto._id,
         id: producto._id,
         nombre: producto.nombre,
-        precio: producto.precio,
+        precio: precioParaDesarrollo(producto.precio),
         categoria: producto.categoria,
         marca: producto.marca,
         modelo: producto.modelo,
@@ -244,7 +245,7 @@ const actualizarProducto = async (req, res, next) => {
         _id: productoActualizado._id,
         id: productoActualizado._id,
         nombre: productoActualizado.nombre,
-        precio: productoActualizado.precio,
+        precio: precioParaDesarrollo(productoActualizado.precio),
         categoria: productoActualizado.categoria,
         marca: productoActualizado.marca,
         modelo: productoActualizado.modelo,

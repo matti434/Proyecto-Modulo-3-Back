@@ -1,4 +1,5 @@
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
+const { precioParaDesarrollo } = require('../utils/precioDesarrollo');
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
@@ -24,7 +25,7 @@ async function crearPreferencia(items, pedidoId, email) {
       id: String(item.productoId),
       title: item.nombre || `Producto ${item.productoId}`,
       quantity: Number(item.cantidad) || 1,
-      unit_price: Number(item.precioUnitario) || 0,
+      unit_price: precioParaDesarrollo(Number(item.precioUnitario) || 0),
       currency_id: process.env.MERCADOPAGO_CURRENCY || 'ARS'
     })),
     payer: {

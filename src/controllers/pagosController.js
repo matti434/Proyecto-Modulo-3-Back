@@ -1,5 +1,6 @@
 const { Pedido, Carrito } = require('../models');
 const { crearPreferencia: crearPreferenciaMP, obtenerPago } = require('../services/mercadopagoService');
+const { precioParaDesarrollo } = require('../utils/precioDesarrollo');
 
 /**
  * Crea un pedido pendiente y una preferencia de MercadoPago para Checkout Pro.
@@ -164,11 +165,25 @@ const verificarPago = async (req, res, next) => {
       });
     }
 
+    const transformarPrecios = (p) => {
+      if (!p?.items) return p;
+      return {
+        ...p,
+        items: p.items.map((item) => ({
+          ...item,
+          precioUnitario: precioParaDesarrollo(item.precioUnitario),
+          productoId: item.productoId && item.productoId.precio !== undefined
+            ? { ...item.productoId, precio: precioParaDesarrollo(item.productoId.precio) }
+            : item.productoId
+        }))
+      };
+    };
+
     res.json({
       exito: true,
       transaccionId: pedido.transaccionId || pedido._id.toString(),
       estado: pedido.estado,
-      pedido
+      pedido: transformarPrecios(pedido)
     });
   } catch (error) {
     console.error('[pagos/verificar] Error:', error?.message || error);

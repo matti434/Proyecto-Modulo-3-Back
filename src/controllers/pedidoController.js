@@ -1,4 +1,5 @@
 const { Pedido, Carrito } = require('../models');
+const { precioParaDesarrollo } = require('../utils/precioDesarrollo');
 
 
 const crearPedido = async (req, res, next) => {
@@ -45,6 +46,20 @@ const crearPedido = async (req, res, next) => {
 };
 
 
+const transformarPreciosPedido = (pedido) => {
+  if (!pedido || !pedido.items) return pedido;
+  return {
+    ...pedido,
+    items: pedido.items.map((item) => ({
+      ...item,
+      precioUnitario: precioParaDesarrollo(item.precioUnitario),
+      productoId: item.productoId && item.productoId.precio !== undefined
+        ? { ...item.productoId, precio: precioParaDesarrollo(item.productoId.precio) }
+        : item.productoId
+    }))
+  };
+};
+
 const obtenerPedidos = async (req, res, next) => {
   try {
     const todos = req.query.todos === 'true';
@@ -55,7 +70,7 @@ const obtenerPedidos = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.json(pedidos);
+    res.json(pedidos.map(transformarPreciosPedido));
   } catch (error) {
     next(error);
   }
@@ -83,7 +98,7 @@ const obtenerPedidoPorId = async (req, res, next) => {
       });
     }
 
-    res.json(pedido);
+    res.json(transformarPreciosPedido(pedido));
   } catch (error) {
     next(error);
   }
