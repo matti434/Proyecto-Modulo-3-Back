@@ -25,8 +25,8 @@ const connectDB = async () => {
     await mongoose.connect(uri);
     console.log('✅ MongoDB conectado correctamente');
 
-
-    if (mongoServer) {
+    // En desarrollo: cargar datos iniciales si la DB está vacía (MongoDB en memoria o Atlas)
+    if (mongoServer || config.nodeEnv === 'development') {
       await cargarDatosIniciales();
     }
 
