@@ -17,7 +17,7 @@ const payment = new Payment(client);
  * @returns {Promise<{id, init_point, sandbox_init_point}>}
  */
 async function crearPreferencia(items, pedidoId, email) {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
   const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
 
   const preferenceData = {
@@ -38,6 +38,7 @@ async function crearPreferencia(items, pedidoId, email) {
     },
     auto_return: frontendUrl.includes("localhost") ? undefined : "approved",
     external_reference: String(pedidoId),
+    binary_mode: true,
     notification_url: `${backendUrl}/api/pagos/webhook`
   };
 
@@ -45,7 +46,7 @@ async function crearPreferencia(items, pedidoId, email) {
   return {
     id: response.id,
     init_point: response.init_point,
-    sandbox_init_point: response.sandbox_init_point
+    /*sandbox_init_point: response.sandbox_init_point*/
   };
 }
 
