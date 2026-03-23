@@ -53,7 +53,12 @@ const crearPreferencia = async (req, res, next) => {
       req.usuario.email
     );
 
-    const initPoint = mpPreference.sandbox_init_point || mpPreference.init_point;
+    // Priorizar init_point para evitar fallos del sandbox (cookies/recargas).
+    // Usar MP_USAR_SANDBOX=true en .env si quieres forzar sandbox.
+    const usarSandbox = process.env.MP_USAR_SANDBOX === 'true';
+    const initPoint = usarSandbox
+      ? (mpPreference.sandbox_init_point || mpPreference.init_point)
+      : (mpPreference.init_point || mpPreference.sandbox_init_point);
 
     res.status(200).json({
       exito: true,
