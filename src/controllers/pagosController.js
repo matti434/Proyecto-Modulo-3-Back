@@ -62,10 +62,7 @@ const crearPreferencia = async (req, res, next) => {
     });
   } catch (error) {
     console.error('[pagos/crear-preferencia] Error:', error?.message || error);
-    res.status(500).json({
-      exito: false,
-      mensaje: error?.message || 'Error al crear la preferencia de pago'
-    });
+    next(error);
   }
 };
 
@@ -135,10 +132,7 @@ const crearPago = async (req, res, next) => {
     });
   } catch (error) {
     console.error('[pagos/crear] Error:', error?.message || error);
-    res.status(500).json({
-      exito: false,
-      mensaje: error?.message || 'Error al crear el pago'
-    });
+    next(error);
   }
 };
 
@@ -178,10 +172,7 @@ const verificarPago = async (req, res, next) => {
     });
   } catch (error) {
     console.error('[pagos/verificar] Error:', error?.message || error);
-    res.status(500).json({
-      exito: false,
-      mensaje: 'Error al verificar la transacción'
-    });
+    next(error);
   }
 };
 

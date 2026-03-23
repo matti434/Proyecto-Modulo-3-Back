@@ -53,9 +53,16 @@ const errorHandler = (err, req, res, next) => {
     error = new AppError('Token expirado', 401);
   }
 
+  const mensaje =
+    config.nodeEnv === 'development'
+      ? (error.message || 'Error interno del servidor')
+      : /next is not a function|Cannot read propert|undefined is not/i.test(error.message || '')
+        ? 'Error al procesar la solicitud. Por favor intenta de nuevo.'
+        : (error.message || 'Error interno del servidor');
+
   res.status(error.statusCode || 500).json({
     exito: false,
-    mensaje: error.message || 'Error interno del servidor',
+    mensaje,
     ...(config.nodeEnv === 'development' && { stack: err.stack })
   });
 };

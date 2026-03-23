@@ -62,11 +62,10 @@ const pedidoSchema = new mongoose.Schema({
 });
 
 
-pedidoSchema.pre('save', function (next) {
+pedidoSchema.pre('save', async function () {
   if (this.isNew && !this.transaccionId) {
     this.transaccionId = this._id.toString();
   }
-  next();
 });
 
 module.exports = mongoose.model('Pedido', pedidoSchema);
