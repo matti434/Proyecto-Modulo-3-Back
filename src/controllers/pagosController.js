@@ -3,6 +3,12 @@ const { Pedido, Carrito, Producto } = require('../models');
 const { crearPreferencia: crearPreferenciaMP, obtenerPago } = require('../services/mercadopagoService');
 const { precioParaDesarrollo } = require('../utils/precioDesarrollo');
 
+function refPedidoCoincideConMp(pedido, externalReference) {
+  if (externalReference == null || externalReference === '') return false;
+  const ref = String(externalReference);
+  return ref === String(pedido._id) || (pedido.transaccionId && ref === String(pedido.transaccionId));
+}
+
 async function descontarItemsPedido(pedido, session) {
   const opts = session ? { session } : {};
   for (const item of pedido.items) {
@@ -30,13 +36,31 @@ async function descontarItemsPedido(pedido, session) {
 }
 
 /**
- * Pago aprobado: pendiente → procesando y descuenta stock (idempotente).
- * Intenta transacción (Atlas / replica set); si Mongo no soporta transacciones, aplica sin sesión.
+ * Pago aprobado: pendiente → procesando, descuenta stock y registra mpPaymentId (idempotente).
+ * Si mpPaymentId ya está en pagosMercadoPagoProcesados, no hace nada.
  */
-async function aplicarStockPorPagoAprobadoConTransaccion(pedidoId) {
+async function aplicarStockPorPagoAprobadoConTransaccion(pedidoId, mpPaymentId) {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const pedidoDoc = await Pedido.findOne({ _id: pedidoId }).session(session);
+    if (!pedidoDoc) {
+      await session.abortTransaction();
+      return;
+    }
+    const idStr =
+      mpPaymentId != null && String(mpPaymentId).trim() !== '' ? String(mpPaymentId).trim() : null;
+    const yaProcesado =
+      idStr && (pedidoDoc.pagosMercadoPagoProcesados || []).some((x) => String(x) === idStr);
+    if (yaProcesado) {
+      await session.abortTransaction();
+      return;
+    }
+    if (pedidoDoc.estado !== 'pendiente') {
+      await session.abortTransaction();
+      return;
+    }
+
     const pedido = await Pedido.findOneAndUpdate(
       { _id: pedidoId, estado: 'pendiente' },
       { $set: { estado: 'procesando' } },
@@ -49,6 +73,15 @@ async function aplicarStockPorPagoAprobadoConTransaccion(pedidoId) {
     }
 
     await descontarItemsPedido(pedido, session);
+
+    if (idStr) {
+      await Pedido.updateOne(
+        { _id: pedidoId },
+        { $addToSet: { pagosMercadoPagoProcesados: idStr } },
+        { session },
+      );
+    }
+
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
@@ -58,7 +91,14 @@ async function aplicarStockPorPagoAprobadoConTransaccion(pedidoId) {
   }
 }
 
-async function aplicarStockPorPagoAprobadoSinTransaccion(pedidoId) {
+async function aplicarStockPorPagoAprobadoSinTransaccion(pedidoId, mpPaymentId) {
+  const pedidoDoc = await Pedido.findById(pedidoId);
+  if (!pedidoDoc) return;
+  const idStr =
+    mpPaymentId != null && String(mpPaymentId).trim() !== '' ? String(mpPaymentId).trim() : null;
+  if (idStr && (pedidoDoc.pagosMercadoPagoProcesados || []).some((x) => String(x) === idStr)) return;
+  if (pedidoDoc.estado !== 'pendiente') return;
+
   const pedido = await Pedido.findOneAndUpdate(
     { _id: pedidoId, estado: 'pendiente' },
     { $set: { estado: 'procesando' } },
@@ -69,15 +109,18 @@ async function aplicarStockPorPagoAprobadoSinTransaccion(pedidoId) {
 
   try {
     await descontarItemsPedido(pedido, null);
+    if (idStr) {
+      await Pedido.updateOne({ _id: pedidoId }, { $addToSet: { pagosMercadoPagoProcesados: idStr } });
+    }
   } catch (err) {
     await Pedido.findByIdAndUpdate(pedidoId, { $set: { estado: 'pendiente' } });
     throw err;
   }
 }
 
-async function aplicarStockPorPagoAprobado(pedidoId) {
+async function aplicarStockPorPagoAprobado(pedidoId, mpPaymentId) {
   try {
-    await aplicarStockPorPagoAprobadoConTransaccion(pedidoId);
+    await aplicarStockPorPagoAprobadoConTransaccion(pedidoId, mpPaymentId);
   } catch (err) {
     const msg = String(err?.message || err);
     const code = err?.code;
@@ -88,7 +131,7 @@ async function aplicarStockPorPagoAprobado(pedidoId) {
       );
     if (sinTransacciones) {
       console.warn('[pagos] Stock sin transacción Mongo:', msg);
-      await aplicarStockPorPagoAprobadoSinTransaccion(pedidoId);
+      await aplicarStockPorPagoAprobadoSinTransaccion(pedidoId, mpPaymentId);
       return;
     }
     console.error(err?.message || err);
@@ -121,7 +164,7 @@ async function procesarPagoAprobadoPorId(paymentId) {
   const pagoInfo = await obtenerPago(paymentId);
   const { status, external_reference: pedidoId } = pagoInfo;
   if (status !== 'approved' || !pedidoId) return;
-  await aplicarStockPorPagoAprobado(pedidoId);
+  await aplicarStockPorPagoAprobado(pedidoId, paymentId);
 }
 
 /**
@@ -247,7 +290,7 @@ const confirmarPagoMercadoPago = async (req, res, next) => {
     if (pedido.usuario.toString() !== req.usuario._id.toString()) {
       return res.status(403).json({ exito: false, mensaje: 'No autorizado' });
     }
-    await aplicarStockPorPagoAprobado(pagoInfo.external_reference);
+    await aplicarStockPorPagoAprobado(pagoInfo.external_reference, String(paymentId));
     res.json({ exito: true, mensaje: 'Stock actualizado' });
   } catch (err) {
     if (String(err?.message || '').includes('[pagos/stock]')) {
@@ -303,8 +346,10 @@ const crearPago = async (req, res, next) => {
 const verificarPago = async (req, res, next) => {
   try {
     const { transaccionId } = req.params;
+    const paymentIdSync =
+      req.query?.payment_id ?? req.query?.paymentId ?? req.body?.payment_id ?? req.body?.paymentId;
 
-    const pedido = await Pedido.findOne({
+    let pedido = await Pedido.findOne({
       $or: [
         { transaccionId },
         { _id: transaccionId }
@@ -326,6 +371,23 @@ const verificarPago = async (req, res, next) => {
         exito: false,
         mensaje: 'No tienes permiso para ver esta transacción'
       });
+    }
+
+    if (paymentIdSync && pedido.estado === 'pendiente') {
+      try {
+        const pagoInfo = await obtenerPago(String(paymentIdSync));
+        if (
+          pagoInfo.status === 'approved' &&
+          refPedidoCoincideConMp(pedido, pagoInfo.external_reference)
+        ) {
+          await aplicarStockPorPagoAprobado(pedido._id, String(paymentIdSync));
+          pedido = await Pedido.findOne({
+            $or: [{ transaccionId }, { _id: transaccionId }],
+          }).lean();
+        }
+      } catch (syncErr) {
+        console.error('[pagos/verificar] sync stock MP:', syncErr?.message || syncErr);
+      }
     }
 
     const transformarPrecios = (p) => {

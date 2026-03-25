@@ -53,6 +53,11 @@ const pedidoSchema = new mongoose.Schema({
     enum: ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'],
     default: 'pendiente'
   },
+  /** IDs de pago MP que ya descontaron stock (evita doble descuento: webhook + confirmar + verificar). */
+  pagosMercadoPagoProcesados: {
+    type: [String],
+    default: []
+  },
   fechaCompra: {
     type: Date,
     default: Date.now
