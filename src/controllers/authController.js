@@ -171,12 +171,14 @@ const registro = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { credencial, contrasena } = req.body;
+    const credencial =
+      req.body.credencial ?? req.body.email ?? req.body.usuario ?? req.body.nombreDeUsuario;
+    const contrasena = req.body.contrasena ?? req.body.password;
 
     if (!credencial || !contrasena) {
       return res.status(400).json({
         exito: false,
-        mensaje: 'Por favor proporcione credenciales'
+        mensaje: 'Por favor proporcione credenciales (email o usuario y contraseña)'
       })
     }
 

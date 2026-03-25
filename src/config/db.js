@@ -25,10 +25,9 @@ const connectDB = async () => {
     await mongoose.connect(uri);
     console.log('✅ MongoDB conectado correctamente');
 
-    // En desarrollo: cargar datos iniciales si la DB está vacía (MongoDB en memoria o Atlas)
-    if (mongoServer || config.nodeEnv === 'development') {
-      await cargarDatosIniciales();
-    }
+    // Si no hay admin (DB nueva o vacía), carga usuarios de prueba y productos del seed.
+    // En producción (Render + Atlas) evita login 401 por colección usuarios vacía.
+    await cargarDatosIniciales();
 
   } catch (error) {
     console.error('❌ Error conectando a MongoDB:', error.message);
