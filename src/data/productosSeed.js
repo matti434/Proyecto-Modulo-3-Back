@@ -66,10 +66,12 @@ const productosEjemplo = [
   { nombre: 'Luz Auxiliar LED', precio: 8800, categoria: 'Accesorios', marca: 'Royal Enfield', modelo: 'LED Light', año: 2024, descripcion: 'Luz auxiliar LED para mejor visibilidad en ruta.', imagen: '/Productos/ImgTaller.jpg', kilometros: null, ubicacion: 'Buenos Aires', stock: true, destacado: false },
   { nombre: 'Manoplas Manillar', precio: 2800, categoria: 'Accesorios', marca: 'Royal Enfield', modelo: 'Hand Guards', año: 2023, descripcion: 'Manoplas para proteger manos del viento y frío.', imagen: '/Productos/ImgTaller.jpg', kilometros: null, ubicacion: 'Córdoba', stock: true, destacado: false },
   { nombre: 'Bidón Auxiliar', precio: 5200, categoria: 'Accesorios', marca: 'Royal Enfield', modelo: 'Auxiliary Tank', año: 2024, descripcion: 'Bidón de combustible auxiliar para viajes largos.', imagen: '/Productos/imgCard2.jpg', kilometros: null, ubicacion: 'Mendoza', stock: true, destacado: false },
-].map((p) => {
+].map((p, i) => {
   const precio = Number(p.precio) || 0;
   const maxPrecio = p.categoria === 'Motos' ? PRECIO_MAX_MOTOS : PRECIO_MAX_OTROS;
-  return { ...p, precio: Math.min(precio, maxPrecio) };
+  const stockDisponible = i % 6;
+  const stock = stockDisponible > 0;
+  return { ...p, precio: Math.min(precio, maxPrecio), stockDisponible, stock };
 });
 
 module.exports = { productosEjemplo };

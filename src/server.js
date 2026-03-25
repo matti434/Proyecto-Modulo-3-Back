@@ -34,6 +34,8 @@ const startServer = async () => {
             console.log('  POST   /api/home/galeria/:id/imagen (admin)');
             console.log('  DELETE /api/home/galeria/:id (admin)');
             console.log('  POST   /api/contacto');
+            console.log('  POST   /api/pagos/webhook (Mercado Pago)');
+            console.log('  POST   /api/pagos/confirmar (JWT + paymentId tras checkout)');
             console.log('=========================================');
         });
     } catch (error) {
