@@ -18,7 +18,7 @@ const startServer = async () => {
             console.log('  POST   /api/auth/registro');
             console.log('  POST   /api/auth/login');
             console.log('  GET    /api/auth/perfil');
-            console.log('  GET    /api/productos');
+            console.log('  GET    /api/productos (?incluirAgotados=true para admin)');
             console.log('  GET    /api/productos/:id');
             console.log('  POST   /api/productos (admin)');
             console.log('  PUT    /api/productos/:id (admin)');

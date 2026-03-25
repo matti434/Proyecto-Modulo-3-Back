@@ -1,6 +1,59 @@
-const { Pedido, Carrito } = require('../models');
+const mongoose = require('mongoose');
+const { Pedido, Carrito, Producto } = require('../models');
 const { crearPreferencia: crearPreferenciaMP, obtenerPago } = require('../services/mercadopagoService');
 const { precioParaDesarrollo } = require('../utils/precioDesarrollo');
+
+/**
+ * Pago aprobado: pasa el pedido de pendiente → procesando y descuenta stock (idempotente).
+ * Usa transacción (requiere replica set, p. ej. MongoDB Atlas).
+ */
+async function aplicarStockPorPagoAprobado(pedidoId) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const pedido = await Pedido.findOneAndUpdate(
+      { _id: pedidoId, estado: 'pendiente' },
+      { $set: { estado: 'procesando' } },
+      { new: true, session },
+    );
+
+    if (!pedido) {
+      await session.abortTransaction();
+      return;
+    }
+
+    for (const item of pedido.items) {
+      const cantidad = Number(item.cantidad) || 1;
+      const prod = await Producto.findOneAndUpdate(
+        { _id: item.productoId, stockDisponible: { $gte: cantidad } },
+        { $inc: { stockDisponible: -cantidad } },
+        { new: true, session },
+      );
+
+      if (!prod) {
+        throw new Error(
+          `[pagos/stock] Stock insuficiente para producto ${item.productoId} (pedido ${pedidoId})`,
+        );
+      }
+
+      if (prod.stockDisponible <= 0) {
+        await Producto.updateOne(
+          { _id: prod._id },
+          { $set: { stock: false, stockDisponible: 0 } },
+          { session },
+        );
+      }
+    }
+
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    console.error(err?.message || err);
+    throw err;
+  } finally {
+    session.endSession();
+  }
+}
 
 /**
  * Crea un pedido pendiente y una preferencia de MercadoPago para Checkout Pro.
@@ -88,7 +141,12 @@ const webhookPago = async (req, res) => {
       const { status, external_reference: pedidoId } = pagoInfo;
 
       if (status === 'approved' && pedidoId) {
-        await Pedido.findByIdAndUpdate(pedidoId, { estado: 'procesando' });
+        try {
+          await aplicarStockPorPagoAprobado(pedidoId);
+        } catch (stockErr) {
+          console.error('[pagos/webhook] Error al descontar stock:', stockErr?.message || stockErr);
+          return res.status(500).send('Error');
+        }
       }
     }
 

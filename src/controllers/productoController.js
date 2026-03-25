@@ -8,6 +8,7 @@ const obtenerProducto = async (req, res, next) => {
       marca,
       destacado,
       stock,
+      incluirAgotados,
       buscar,
       reciente,
       limite,
@@ -29,10 +30,15 @@ const obtenerProducto = async (req, res, next) => {
       query.destacado = true;
     }
 
-    if (stock === "true") {
+    if (incluirAgotados === "true") {
+      if (stock === "true") {
+        query.stock = true;
+      } else if (stock === "false") {
+        query.stock = false;
+      }
+    } else {
       query.stock = true;
-    } else if (stock === "false") {
-      query.stock = false;
+      query.stockDisponible = { $gte: 1 };
     }
 
     if (precioMin || precioMax) {
